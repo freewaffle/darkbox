@@ -1,0 +1,30 @@
+local URL = {
+	FACTORY_SCRIPT = msg.url("game:/factory#script")
+}
+
+local MSG = {
+	ADD = hash("add")
+}
+
+function init(self)
+	do
+		local payphone = function (x, y)
+			return {
+				type = "payphone",
+				position = vmath.vector3(128*x - 64, 128*y - 64, 0.9)
+			}
+		end
+
+		local payphones = {
+			payphone(7, 3),
+			payphone(8, 3),
+			payphone(9, 3),
+			payphone(10, 3),
+		}
+
+		for _, obj in ipairs(payphones) do
+			msg.post(URL.FACTORY_SCRIPT, MSG.ADD, obj)
+		end
+	end
+	collectgarbage()
+end

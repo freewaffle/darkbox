@@ -1,0 +1,65 @@
+local MSG = {
+	ACTIVATE_MISSION = hash("activate_mission")
+}
+
+local mkit = require("lib.mkit")
+
+local ignore_update = false
+
+local MISSIONS = {
+	mkit.make_mission(
+		function (env)
+			print("mission init")
+			mkit.add_speech({
+				"приветствую! это небольшая демонстрация диалогов в игре! точнее это монолог, потому что игрок говорить не может, но надеюсь суть вы поняли :D",
+				"через этот текст игрок будет получать суть миссии и задания, которые ему предстоит выполнить в рамках этой миссии!",
+				"в скором времени я улучшу дизайн этого окошка, а пока я стараюсь создать фундамент для этого всего!",
+				"ну а теперь... пока! спасибо за просмотр! :D",
+			})
+		end
+		-- function (env)
+		-- 	print("mission frame")
+		-- end
+	)
+}
+
+function init(self)
+	self.progress = 0
+
+	self.get_fn_init = function ()
+		return MISSIONS[self.active].fn_init
+	end
+	
+	self.get_fn_update = function ()
+		return MISSIONS[self.active].fn_update
+	end
+
+	self.pcall = function (func)
+		xpcall(func, function (msg)
+			error("mission script error: " .. msg, 0)
+			-- cancel mission
+		end)
+	end
+end
+
+function update(self, dt)
+	if self.active and not ignore_update then
+		local fn_update = self.get_fn_update()
+		if fn_update then
+			self.pcall(fn_update)
+		else
+			ignore_update = true
+		end
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == MSG.ACTIVATE_MISSION then
+		if MISSIONS[self.progress+1] then
+			ignore_update = false
+			self.progress = self.progress + 1
+			self.active = self.progress
+			self.pcall(assert(self.get_fn_init(), "undeclared init function"))
+		end
+	end
+end

@@ -1,0 +1,39 @@
+fonts {
+  name: "juliamono_bold"
+  font: "/assets/fonts/juliamono_bold.font"
+}
+nodes {
+  position {
+    x: 960.0
+    y: 540.0
+  }
+  size {
+    x: 1920.0
+    y: 1080.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "root"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 320.0
+    y: 64.0
+  }
+  type: TYPE_TEXT
+  text: "\320\267\320\260\320\263\321\200\321\203\320\267\320\272\320\260..."
+  font: "juliamono_bold"
+  id: "text"
+  parent: "root"
+  inherit_alpha: true
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT
+max_nodes: 5
+max_dynamic_textures: 0

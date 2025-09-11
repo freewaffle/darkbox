@@ -1,0 +1,140 @@
+script: "/game/script/hud.gui_script"
+fonts {
+  name: "juliamono_regular_lq"
+  font: "/assets/fonts/juliamono_regular_lq.font"
+}
+fonts {
+  name: "juliamono_bold"
+  font: "/assets/fonts/juliamono_bold.font"
+}
+nodes {
+  type: TYPE_BOX
+  id: "root"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+  visible: false
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "vignette"
+  parent: "root"
+  inherit_alpha: true
+  template: "/assets/widgets/vignette.gui"
+  enabled: false
+}
+nodes {
+  type: TYPE_BOX
+  id: "vignette/box"
+  parent: "vignette"
+  alpha: 0.4
+  overridden_fields: 30
+  template_node_child: true
+}
+nodes {
+  position {
+    x: 1870.0
+    y: 50.0
+  }
+  size {
+    x: 170.0
+    y: 80.0
+  }
+  color {
+    x: 0.0
+    y: 0.25
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "hp_box"
+  pivot: PIVOT_SE
+  parent: "root"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -152.0
+    y: 65.0
+  }
+  size {
+    x: 30.0
+    y: 24.0
+  }
+  type: TYPE_TEXT
+  text: "HP"
+  font: "juliamono_regular_lq"
+  id: "hp_label"
+  pivot: PIVOT_NW
+  parent: "hp_box"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -19.0
+    y: 70.0
+  }
+  size {
+    x: 84.0
+    y: 47.0
+  }
+  type: TYPE_TEXT
+  text: "100"
+  font: "juliamono_bold"
+  id: "hp_value"
+  pivot: PIVOT_NE
+  parent: "hp_box"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 50.0
+    y: 50.0
+  }
+  type: TYPE_BOX
+  id: "speech"
+  parent: "root"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+  enabled: false
+  visible: false
+}
+nodes {
+  size {
+    x: 1600.0
+    y: 80.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "speech_bg"
+  pivot: PIVOT_SW
+  parent: "speech"
+  inherit_alpha: true
+  alpha: 0.5
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 10.0
+    y: 10.0
+  }
+  size {
+    x: 1580.0
+    y: 60.0
+  }
+  type: TYPE_TEXT
+  text: "\320\260\320\261\320\262"
+  font: "juliamono_regular_lq"
+  id: "speech_text"
+  pivot: PIVOT_SW
+  line_break: true
+  parent: "speech"
+  inherit_alpha: true
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT
+max_nodes: 16
+max_dynamic_textures: 0

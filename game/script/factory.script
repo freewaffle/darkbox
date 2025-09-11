@@ -1,0 +1,23 @@
+local MSG = {
+	ADD = hash("add")
+}
+
+local FACTORY = {
+	PAYPHONE = msg.url("game:/factory#payphone")
+}
+
+local payphones = {}
+
+function on_message(self, message_id, message, sender)
+	if message_id == MSG.ADD then
+		local TYPE = message.type
+		if TYPE == "payphone" then
+			payphones[#payphones+1] = collectionfactory.create(FACTORY.PAYPHONE, message.position)
+			--pprint(payphones)
+		else
+			error("unknown type: " .. TYPE, 2)
+		end
+	end
+end
+
+-- мяукаю

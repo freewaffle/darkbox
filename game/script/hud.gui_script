@@ -1,0 +1,32 @@
+local MSG = {
+	UPDATE_HP = hash("update_hp"),
+	UPDATE_SPEECH = hash("update_speech")
+}
+
+function init(self)
+	self.NODE = {
+		HP = {
+			BOX = gui.get_node("hp_box"),
+			VALUE = gui.get_node("hp_value")
+		},
+		SPEECH = {
+			THIS = gui.get_node("speech"),
+			BG = gui.get_node("speech_bg"),
+			TEXT = gui.get_node("speech_text")
+		}
+	}
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == MSG.UPDATE_HP then
+		local to = message[1]
+		gui.set_text(self.NODE.HP.VALUE, to)
+	elseif message_id == MSG.UPDATE_SPEECH then
+		if message.show then
+			gui.set_enabled(self.NODE.SPEECH.THIS, true)
+			gui.set_text(self.NODE.SPEECH.TEXT, message.text)
+		else
+			gui.set_enabled(self.NODE.SPEECH.THIS, false)
+		end
+	end
+end

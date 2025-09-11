@@ -1,0 +1,27 @@
+images {
+  image: "/assets/images/player/player_1.png"
+}
+images {
+  image: "/assets/images/payphone.png"
+}
+images {
+  image: "/assets/images/shadow.png"
+}
+animations {
+  id: "player_moving"
+  images {
+    image: "/assets/images/player/player_2.png"
+  }
+  images {
+    image: "/assets/images/player/player_1.png"
+  }
+  images {
+    image: "/assets/images/player/player_4.png"
+  }
+  images {
+    image: "/assets/images/player/player_3.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 4
+}
+extrude_borders: 2

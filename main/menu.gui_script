@@ -1,0 +1,260 @@
+local WHEEL_UP = hash("wheel_up")
+local WHEEL_DOWN = hash("wheel_down")
+local MOUSE_LEFT = hash("mouse_left")
+
+local bg_color = {
+	enabled = vmath.vector3(0.2),
+	disabled = vmath.vector3(0.1)
+}
+
+local text_color = {
+	enabled = vmath.vector3(1),
+	disabled = vmath.vector3(0.5)
+}
+
+local SCREEN = {
+	MAINMENU = 1,
+	NEW_GAME = 2,
+	SETTINGS = 3,
+
+	-- Блокировать ввод.
+	LOCK = 0,
+}
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+
+	self.current_screen = SCREEN.MAINMENU
+
+	self.selection = 1
+
+	--[[
+	Функция `item` возвращает таблицу, состоящую из метки и ссылок на ноды
+	бокса и текста.
+
+	Если заменить вызовы item(...) на возвращаемый результат, то получится:
+
+		self.items = {
+			{
+				label = "new_game",
+				text = текст,
+				box = бокс
+			},
+			...
+		}
+
+	Так, для итерации по всем элементам, можно использовать такой цикл:
+
+		for i, item in ipairs(self.items) do ... end
+
+	где i будет указывать на номер элемента, а item на сам элемент.
+
+	Так как ссылки, возвращаемые gui.get_node(), не содержат идентификатора,
+	label можно использовать для идентификации ссылаемой ноды. Для этой цели
+	text не используется из-за затруднений при сравнении с локализацией
+	интерфейса на другие языки.
+	Такую ветвь можно применять для получения активированного элемента и
+	выполнения дальнейших действий согласно задумке:
+
+		if item.label == "new_game" then ... end
+	
+	--------------------------------
+
+	@kandelasky - 22, 23 авг 2025
+	]]
+
+	local item = function(label, id)
+		return {
+			label = label,
+			box = gui.get_node(id .. "/box"),
+			text = gui.get_node(id .. "/text"),
+		}
+	end
+	
+	self.items = {
+		item("new_game", "item_new_game"),
+		item("load_game", "item_load_game"),
+		item("settings", "item_settings"),
+	}
+
+	self.panels = {
+		title = gui.get_node("panel_title"),
+		items = gui.get_node("panel_items"),
+	}
+
+	self.screens = {
+		root = gui.get_node("screens"),
+		new_game = {
+			root = gui.get_node("screen_new_game/root"),
+			button_start = gui.get_node("screen_new_game/button_start/box"),
+			button_back = gui.get_node("screen_new_game/button_back/box"),
+			button_prev_map = gui.get_node("screen_new_game/button_prev_map/box"),
+			button_next_map = gui.get_node("screen_new_game/button_next_map/box"),
+		},
+		-- settings = {
+		-- 	body = gui.get_node("screen_settings"),
+		-- 	title = gui.get_node("text"),
+		-- 	button_exit = gui.get_node("button/box")
+		-- }
+	}
+
+	-- Возвращает таблицу с информацией о карте.
+	local map = function(id, title, image)
+		return {
+			id = id,
+			title = title,
+			image = image,
+		}
+	end
+
+	-- map selection
+	self.map_sel = 1
+	
+	self.maps = {
+		map("metacity", "metacity", "metacity")
+	}
+
+	self.root = gui.get_node("root")
+
+	-- animation time
+	self.anim_t = 0.3
+	self.easing = gui.EASING_OUTCUBIC
+
+	self.scroll = {
+		locked = false,
+		delay = 0.05
+	}
+end
+
+function on_input(self, action_id, action)
+	-- функция `enable_panels` определена как переменная для доступа к `self`
+
+	local enable_panels = function (enable)
+		if enable then
+			gui.animate(self.panels.title, "position.x", 0, self.easing, self.anim_t)
+			gui.animate(self.panels.items, "position.x", 960, self.easing, self.anim_t)
+		else
+			gui.animate(self.panels.title, "position.x", -960, self.easing, self.anim_t)
+			gui.animate(self.panels.items, "position.x", 1920, self.easing, self.anim_t)
+		end
+	end
+	
+	if self.current_screen == SCREEN.MAINMENU then
+		local scroll = false
+
+		if not self.scroll.locked then
+			if action_id == WHEEL_UP then
+				if self.selection < #self.items then
+					self.selection = self.selection + 1
+				else
+					self.selection = 1
+				end
+				scroll = true
+			elseif action_id == WHEEL_DOWN then
+				if self.selection > 1 then
+					self.selection = self.selection - 1
+				else
+					self.selection = #self.items
+				end
+				scroll = true
+			end
+			--print(self.selection, #self.items)
+		end
+
+		if action_id == MOUSE_LEFT and action.released then
+			local selection = nil
+			
+			for i, item in ipairs(self.items) do
+				if i == self.selection and gui.pick_node(item.box, action.x, action.y) then
+					-- print("selected item:", item.label)
+					selection = item.label
+					break
+				end
+			end
+
+			if selection ~= nil then
+				local root = nil
+				
+				if selection == "new_game" then
+					root = self.screens.new_game.root
+					enable_panels(false)
+					gui.animate(root, "position.y", 0, self.easing, self.anim_t, 0, function ()
+						self.current_screen = SCREEN.NEW_GAME
+					end)
+				-- elseif selection == "settings" then
+				-- 	self.current_screen = SCREEN.SETTINGS
+				-- 	body = self.screens.settings.body
+				end
+
+				if root ~= nil then
+					sound.play("/mainmenu#sound_select")
+				else
+					error("undefined selection: " .. selection, 0)
+				end
+			end
+		end
+
+		------------------------------------------------
+
+		if scroll then
+			for i, item in ipairs(self.items) do
+				if i == self.selection then
+					gui.animate(item.box, "color", bg_color.enabled, self.easing, self.anim_t)
+					gui.animate(item.text, "color", text_color.enabled, self.easing, self.anim_t)
+					
+					--gui.set_color(item.box, bg_color.enabled)
+					--gui.set_color(item.text, text_color.enabled)
+				else
+					gui.animate(item.box, "color", bg_color.disabled, self.easing, self.anim_t)
+					gui.animate(item.text, "color", text_color.disabled, self.easing, self.anim_t)
+					
+					--gui.set_color(item.box, bg_color.disabled)
+					--gui.set_color(item.text, text_color.disabled)
+				end
+				
+				local target = 540 - 64 * i + 64 * self.selection
+				gui.animate(item.box, "position.y", target, self.easing, self.anim_t)
+			end
+
+			sound.play("/mainmenu#sound_up")
+			
+			self.scroll.locked = true
+			timer.delay(self.scroll.delay, false, function() self.scroll.locked = false end)
+		end
+	elseif self.current_screen == SCREEN.NEW_GAME then
+		if action_id == MOUSE_LEFT then
+			if gui.pick_node(self.screens.new_game.button_start, action.x, action.y) then
+				local start_game = function ()
+					print("starting the game!")
+				end
+				
+				sound.play("/mainmenu#sound_select")
+				
+				self.current_screen = SCREEN.LOCK
+				local loading = gui.get_node("loading/root")
+				
+				gui.set_enabled(loading, true)
+				gui.animate(loading, "scale", vmath.vector3(1), self.easing, self.anim_t)
+				gui.animate(loading, "color", vmath.vector4(0, 0, 0, 1), self.easing, self.anim_t, 0, function ()
+					-- отключаем интерфейс в целях оптимизации:
+					gui.set_enabled(self.root, false)
+					
+					start_game()
+				end)
+			elseif gui.pick_node(self.screens.new_game.button_back, action.x, action.y) then
+				self.current_screen = SCREEN.MAINMENU
+				enable_panels(true)
+				local root = self.screens.new_game.root
+				gui.animate(root, "position.y", -1080, self.easing, self.anim_t, 0, function() gui.set_position(root, vmath.vector3(0, 1080, 0)) end)
+			end
+		end
+	-- elseif self.current_screen == SCREEN.SETTINGS then
+	-- 	if action_id == MOUSE_LEFT then
+	-- 		if gui.pick_node(self.screens.settings.button_exit, action.x, action.y) then
+	-- 			self.current_screen = SCREEN.MAINMENU
+	-- 			enable_panels(true)
+	-- 			gui.animate(self.screens.settings.body, "position.y", -1080, self.easing, self.anim_t, 0, function() gui.set_position(self.screens.settings.body, vmath.vector3(0, 1080, 0)) end)
+	-- 		end
+	-- 	end
+	end
+end
