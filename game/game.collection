@@ -51,6 +51,7 @@ embedded_instances {
   "  data: 15.5\\n"
   "  data: 10.0\\n"
   "}\\n"
+  "locked_rotation: true\\n"
   "event_collision: false\\n"
   "event_contact: false\\n"
   "\"\n"
