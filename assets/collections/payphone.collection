@@ -86,7 +86,7 @@ embedded_instances {
   "embedded_components {\n"
   "  id: \"sound\"\n"
   "  type: \"sound\"\n"
-  "  data: \"sound: \\\"/assets/sounds/sfx/payphone.ogg\\\"\\n"
+  "  data: \"sound: \\\"/assets/sounds/misc/payphone.ogg\\\"\\n"
   "looping: 1\\n"
   "\"\n"
   "}\n"

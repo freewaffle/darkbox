@@ -1,14 +1,39 @@
 local ID = {
 	SOUND = {
-		SPEECH = msg.url("game:/player#speech")
+		SPEECH = msg.url("game:/sound#speech"),
+		SPEECHPART = msg.url("game:/sound#speechpart"),
 	},
 
 	HUD = msg.url("game:/ui#hud")
 }
 
 local MSG = {
-	UPDATE_SPEECH = hash("update_speech")
+	UPDATE_SPEECH = hash("update_speech"),
+	SOUND_DONE = hash("sound_done")
 }
+
+local speechpart_count = 0
+
+local function speechpart_handle(self, message_id, message, handler)
+	speechpart_count = speechpart_count - 1
+	if speechpart_count > 0 and message_id == MSG.SOUND_DONE then
+		local magic = (math.random(-1, 2) / 20)
+		sound.play(ID.SOUND.SPEECHPART, {
+			--delay = 0.1 * (magic + 0.05),
+			speed = 1 + magic
+		}, speechpart_handle)
+	else
+		speechpart_count = 0
+	end
+end
+
+local function play_speech(count)
+	if count then
+		speechpart_count = speechpart_count + count
+	end
+	math.randomseed(os.time())
+	sound.play(ID.SOUND.SPEECHPART, nil, speechpart_handle)
+end
 
 local speech_stack = {}
 
@@ -30,7 +55,8 @@ local function speech_pop_handle()
 			text = speech
 		})
 		if not had_speech_before then
-			sound.play(ID.SOUND.SPEECH)
+			-- sound.play(ID.SOUND.SPEECH)
+			play_speech(math.floor(#speech * 0.1))
 			had_speech_before = true
 		end
 	else

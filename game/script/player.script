@@ -172,9 +172,10 @@ function init(self)
 
 	local TX, TY = 6, 3
 	local P = vmath.vector3(128*TX-64, 128*TY-64, 1)
+	local M = 1
 
 	go.set_position(P)
-	go.set_position(vmath.vector3(P.x*2, P.y*2, P.z), ID.CAMERA.THIS)
+	go.set_position(vmath.vector3(P.x*M, P.y*M, P.z), ID.CAMERA.THIS)
 
 	----------------
 	-- 2. intro zoom
@@ -201,13 +202,16 @@ function update(self, dt)
 		local pos = go.get_position() + vmath.rotate(rot, (self.velocity * dt))
 		go.set_position(pos)
 
-		self.velocity = vmath.vector3()
-
 		tile_trigger(pos)
 
-		if CONST.CAMERA_FOLLOWS_DIRECTION then
-			pos = pos + vmath.rotate(rot, vmath.vector3(0, 128, 0))
+		if CONST.CAMERA_FOLLOWS_DIRECTION and self.velocity.y ~= 0 then
+			if self.velocity.y > 0 then
+				pos = pos + vmath.rotate(rot, vmath.vector3(0, 128, 0))
+			else
+				pos = pos - vmath.rotate(rot, vmath.vector3(0, 128, 0))
+			end
 		end
+		self.velocity = vmath.vector3()
 		
 		move_camera(pos, 1, go.EASING_OUTCUBIC)
 
