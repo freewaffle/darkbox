@@ -19,5 +19,4 @@ Darkbox распространяется в надежде, что она буд
 
 function init(self)
 	msg.post("@render:", "use_fixed_fit_projection", { near = -1, far = 1 })
-	print("Welcome to Darkbox!")
 end
