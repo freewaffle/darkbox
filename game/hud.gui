@@ -1,4 +1,4 @@
-script: "/game/script/hud.gui_script"
+script: "/game/scripts/hud.gui_script"
 fonts {
   name: "juliamono_regular_lq"
   font: "/assets/fonts/juliamono_regular_lq.font"
