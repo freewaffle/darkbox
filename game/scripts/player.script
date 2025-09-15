@@ -229,13 +229,14 @@ function update(self, dt)
 			else
 				pos = pos - vmath.rotate(rot, vmath.vector3(0, 128, 0))
 			end
+			move_camera(pos, 1, go.EASING_OUTCUBIC)
+		else
+			go.set_position(pos, ID.CAMERA.THIS)
 		end
-		self.velocity = vmath.vector3()
 		
-		move_camera(pos, 1, go.EASING_OUTCUBIC)
-
+		self.velocity = vmath.vector3()
 		collectgarbage()
-	else
+	elseif CONST.CAMERA_FOLLOWS_DIRECTION then
 		move_camera(go.get_position(), 0.6)
 	end
 

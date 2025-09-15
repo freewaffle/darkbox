@@ -19,8 +19,8 @@ Darkbox распространяется в надежде, что она буд
 
 local ID = {
 	SOUND = {
-		SPEECH = msg.url("game:/sound#speech"),
-		SPEECHPART = msg.url("game:/sound#speechpart"),
+		SP = "game:/sound#sp",
+		SP_MAX = 7
 	},
 
 	HUD = msg.url("game:/ui#hud")
@@ -32,12 +32,21 @@ local MSG = {
 }
 
 local speechpart_count = 0
+local speechpart_prev = 0
 
 local function speechpart_handle(self, message_id, message, handler)
 	speechpart_count = speechpart_count - 1
 	if speechpart_count > 0 and message_id == MSG.SOUND_DONE then
 		local magic = (math.random(-1, 2) / 20)
-		sound.play(ID.SOUND.SPEECHPART, {
+		local r
+		while true do
+			r = math.random(1, ID.SOUND.SP_MAX)
+			if r ~= speechpart_prev then
+				speechpart_prev = r
+				break
+			end
+		end
+		sound.play(ID.SOUND.SP .. r, {
 			--delay = 0.1 * (magic + 0.05),
 			speed = 1 + magic
 		}, speechpart_handle)
@@ -51,7 +60,8 @@ local function play_speech(count)
 		speechpart_count = speechpart_count + count
 	end
 	math.randomseed(os.time())
-	sound.play(ID.SOUND.SPEECHPART, nil, speechpart_handle)
+	speechpart_prev = math.random(1, ID.SOUND.SP_MAX)
+	sound.play(ID.SOUND.SP .. speechpart_prev, nil, speechpart_handle)
 end
 
 local speech_stack = {}
@@ -75,7 +85,7 @@ local function speech_pop_handle()
 		})
 		if not had_speech_before then
 			-- sound.play(ID.SOUND.SPEECH)
-			play_speech(math.floor(#speech * 0.1))
+			play_speech(math.ceil(#speech * 0.1))
 			had_speech_before = true
 		end
 	else
@@ -88,10 +98,6 @@ local speech_pop_timer = nil
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
---- Инструментарий для создания миссий.
----
---- Инструментарий `mkit` содержит функции для создания миссий и прямого взаимодействия
---- с механиками игры.
 local M = {}
 
 function M.restart()
@@ -99,22 +105,7 @@ function M.restart()
 	speech_pop_timer = timer.delay(5, true, speech_pop_handle)
 end
 
---- Создаёт экземпляр миссии.
----
---- Миссия состоит из среды `env`, функций инициализации `fn_init` и обновления `fn_update`.
---- Указанные функции вызываются игрой автоматически. Им автоматически передаётся
---- таблица `env` (среда), где они могут хранить свои переменные.
----
---- Функция `fn_init` вызывается один раз при активации миссии. Эта функция
---- не ограничена в возможностях инструментария `kit` и может вызывать любые функции оттуда.
----
---- Функция `fn_update` вызывается каждый раз при обновлении кадра. Эта функция может
---- отсутствовать, если миссии не требуется обработка при каждом кадре.
----
---- `make` принимает функции из параметров `fn_init` и `fn_update` и перемещает их в
---- экземпляр миссии. Параметр `fn_update` может быть пропущен, в таком случае
---- этой функции не будет в экземпляре миссии и она не будет выполняться.
-function M.make_mission(fn_init, fn_update)
+function M.make(fn_init, fn_update)
 	if not fn_init then
 		error("missing an init function", 2)
 	else
@@ -164,7 +155,9 @@ end
 function M.interrupt_speech(speech)
 	local ts = type(speech)
 	if ts == "table" or ts == "string" then
-		-- send messages to stop speech synthesis
+		speechpart_count = 0
+		sound.stop(ID.SOUND.SPEECHPART)
+		
 		M.remove_speech()
 		M.add_speech(speech)
 	else

@@ -21,44 +21,48 @@ local MSG = {
 	ACTIVATE_MISSION = hash("activate_mission")
 }
 
+------------------------------------------------------------------------
+
 local mkit = require("lib.mkit")
+local locale = require("lib.locale")
 
-local ignore_update = false
-
-local ON_START_MISSION = mkit.make_mission(
-	function (env)
-		mkit.add_speech({
-			"добро пожаловать! подходи к телефону, чтобы разведать информацию о городке."
-		})
-	end
-	-- function (env)
-	-- 	print("mission frame")
-	-- end
-)
-
-local MISSIONS = {
-	mkit.make_mission(
+function init(self)
+	self.locale = locale.get_page("game")
+	
+	self.on_start_script = mkit.make(
 		function (env)
-			-- title
 			mkit.add_speech({
-				"приветствую в Метасити! этот городок крайне мал и скуден, чем другие, но дел здесь тоже... выше гор! в любом случае, вот парочку вещей, которые ты можешь устроить:",
-				"по городу расставлены телефонные будки. подходи к ним и мы свалим на тебя какое-нибудь дело. конечно, платно, а за особые задания мы платим также особо дорого!"
+				self.locale[1]
 			})
 		end
 		-- function (env)
+		-- 	print("mission frame")
 		-- end
 	)
-}
+	
+	self.scripts = {
+		mkit.make(
+			function (env)
+				-- title
+				mkit.interrupt_speech({
+					self.locale[2],
+					self.locale[3],
+				})
+			end
+			-- function (env)
+			-- end
+		)
+	}
 
-function init(self)
+	self.ignore_fn_update = false
 	self.progress = 0
 
 	self.get_fn_init = function ()
-		return MISSIONS[self.active].fn_init
+		return self.scripts[self.active].fn_init
 	end
 	
 	self.get_fn_update = function ()
-		return MISSIONS[self.active].fn_update
+		return self.scripts[self.active].fn_update
 	end
 
 	self.pcall = function (func)
@@ -70,20 +74,20 @@ function init(self)
 end
 
 function update(self, dt)
-	if self.active and not ignore_update then
+	if self.active ~= nil and not self.ignore_fn_update then
 		local fn_update = self.get_fn_update()
 		if fn_update then
 			self.pcall(fn_update)
 		else
-			ignore_update = true
+			self.ignore_fn_update = true
 		end
 	end
 end
 
 function on_message(self, message_id, message, sender)
 	if message_id == MSG.ACTIVATE_MISSION then
-		if MISSIONS[self.progress+1] then
-			ignore_update = false
+		if self.scripts[self.progress+1] ~= nil then
+			self.ignore_fn_update = false
 			self.progress = self.progress + 1
 			self.active = self.progress
 			self.pcall(assert(self.get_fn_init(), "undeclared init function"))

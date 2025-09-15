@@ -56,3 +56,6 @@ max_tile_count = 4096
 [script]
 shared_state = 1
 
+[shader]
+exclude_gles_sm100 = 1
+
