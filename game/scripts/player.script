@@ -37,7 +37,8 @@ local MSG = {
 	ACQ_INPUT = hash("acquire_input_focus"),
 	REL_INPUT = hash("release_input_focus"),
 	TRIG_RESP = hash("trigger_response"),
-	ACTIVATE_MISSION = hash("activate_mission")
+	ACTIVATE_MISSION = hash("activate_mission"),
+	SCRIPT_FINISH = hash("script_finish")
 }
 
 -- идентификаторы игровых объектов.
@@ -101,7 +102,8 @@ local CONST = {
 
 local hp = CONST.MAX_HP
 local dead = hp <= 0
-local mission_active = false
+local script_active = false
+local angle = vmath.quat()
 
 -- local function move_camera(lerp)
 -- 	local command = "update_pos"
@@ -114,7 +116,8 @@ local mission_active = false
 local function rotate_to_pos(target_position)
 	-- FIXME: анимация свойства "rotation" вызывает ошибку
 	-- go.animate("#sprite", "rotation", go.PLAYBACK_ONCE_FORWARD, to, go.EASING_OUTCUBIC, 0.5)
-	go.set_rotation(vmath.quat_rotation_z(math.atan2(target_position.x, -target_position.y)), ID.THIS)
+	angle = vmath.quat_rotation_z(math.atan2(target_position.x, -target_position.y))
+	go.set_rotation(angle)
 end
 
 local function hp_trigger()
@@ -208,6 +211,8 @@ function init(self)
 end
 
 function update(self, dt)
+	local pos = go.get_position()
+	
 	if self.velocity.x ~= 0 or self.velocity.y ~= 0 then
 		-- делает скорость при двунаправленном движении визуально симметричной
 		-- к скорости с одним направлением
@@ -215,39 +220,36 @@ function update(self, dt)
 			self.velocity = self.velocity * 0.8
 		end
 
-		-- `rot` будет использоваться ниже, в `if CONST.CAMERA_FOLLOWS_DIRECTION`
-		
-		local rot = go.get_rotation()
-		local pos = go.get_position() + vmath.rotate(rot, (self.velocity * dt))
+		go.set_rotation(angle)
+		pos = go.get_position() + vmath.rotate(angle, (self.velocity * dt))
 		go.set_position(pos)
 
 		tile_trigger(pos)
 
 		if CONST.CAMERA_FOLLOWS_DIRECTION and self.velocity.y ~= 0 then
 			if self.velocity.y > 0 then
-				pos = pos + vmath.rotate(rot, vmath.vector3(0, 128, 0))
+				pos = pos + vmath.rotate(angle, vmath.vector3(0, 128, 0))
 			else
-				pos = pos - vmath.rotate(rot, vmath.vector3(0, 128, 0))
+				pos = pos - vmath.rotate(angle, vmath.vector3(0, 128, 0))
 			end
-			move_camera(pos, 1, go.EASING_OUTCUBIC)
-		else
-			go.set_position(pos, ID.CAMERA.THIS)
 		end
 		
 		self.velocity = vmath.vector3()
-		collectgarbage()
-	elseif CONST.CAMERA_FOLLOWS_DIRECTION then
-		move_camera(go.get_position(), 0.6)
 	end
+
+	move_camera(pos, 1, go.EASING_OUTCUBIC)
+	
+	pos = nil
+	collectgarbage()
 
 	--hp_trigger()
 end
 
 function on_message(self, message_id, message, sender)
 	if message_id == MSG.TRIG_RESP then
-		if message.group == ID.GROUP.PAYPHONE and message.enter and not mission_active then
+		if message.group == ID.GROUP.PAYPHONE and message.enter and not script_active then
 			msg.post(ID.MCTL, MSG.ACTIVATE_MISSION)
-			mission_active = true
+			script_active = true
 		end
 	end
 end

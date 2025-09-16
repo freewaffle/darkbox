@@ -57,30 +57,31 @@ function init(self)
 	self.ignore_fn_update = false
 	self.progress = 0
 
+	self.fn_init, self.fn_update = nil, nil
+
 	self.get_fn_init = function ()
-		return self.scripts[self.active].fn_init
+		return self.scripts[self.progress].fn_init
 	end
 	
 	self.get_fn_update = function ()
-		return self.scripts[self.active].fn_update
+		return self.scripts[self.progress].fn_update
+	end
+
+	self.fetch = function ()
+		self.fn_init, self.fn_update = self.get_fn_init(), self.get_fn_update()
 	end
 
 	self.pcall = function (func)
 		xpcall(func, function (msg)
-			error("mission script error: " .. msg, 0)
-			-- cancel mission
+			print("ERROR: " .. msg, 0)
+			msg.post("@system:", "exit", {code = 1})
 		end)
 	end
 end
 
 function update(self, dt)
-	if self.active ~= nil and not self.ignore_fn_update then
-		local fn_update = self.get_fn_update()
-		if fn_update then
-			self.pcall(fn_update)
-		else
-			self.ignore_fn_update = true
-		end
+	if self.fn_update then
+		self.pcall(self.fn_update)
 	end
 end
 
@@ -89,8 +90,8 @@ function on_message(self, message_id, message, sender)
 		if self.scripts[self.progress+1] ~= nil then
 			self.ignore_fn_update = false
 			self.progress = self.progress + 1
-			self.active = self.progress
-			self.pcall(assert(self.get_fn_init(), "undeclared init function"))
+			self.fetch()
+			self.pcall(assert(self.fn_init, "undeclared init function"))
 		end
 	end
 end

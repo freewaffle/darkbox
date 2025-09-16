@@ -7,6 +7,9 @@ images {
 images {
   image: "/assets/images/shadow.png"
 }
+images {
+  image: "/assets/images/arrow.png"
+}
 animations {
   id: "player_moving"
   images {

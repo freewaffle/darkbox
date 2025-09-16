@@ -23,12 +23,18 @@ local ID = {
 		SP_MAX = 7
 	},
 
-	HUD = msg.url("game:/ui#hud")
+	PLAYER = {
+		SCRIPT = msg.url("game:/player#script")
+	},
+
+	HUD = msg.url("game:/ui#hud"),
 }
 
 local MSG = {
 	UPDATE_SPEECH = hash("update_speech"),
-	SOUND_DONE = hash("sound_done")
+	SOUND_DONE = hash("sound_done"),
+	SCRIPT_FINISH = hash("script_finish"),
+	TOGGLE = hash("toggle"),
 }
 
 local speechpart_count = 0
@@ -85,7 +91,8 @@ local function speech_pop_handle()
 		})
 		if not had_speech_before then
 			-- sound.play(ID.SOUND.SPEECH)
-			play_speech(math.ceil(#speech * 0.1))
+			local times = 12 -- math.ceil(#speech * 0.05)
+			play_speech(times)
 			had_speech_before = true
 		end
 	else
@@ -102,7 +109,7 @@ local M = {}
 
 function M.restart()
 	if speech_pop_timer then timer.cancel(speech_pop_timer) end
-	speech_pop_timer = timer.delay(5, true, speech_pop_handle)
+	speech_pop_timer = timer.delay(6, true, speech_pop_handle)
 end
 
 function M.make(fn_init, fn_update)
@@ -163,6 +170,9 @@ function M.interrupt_speech(speech)
 	else
 		error(string.format("invalid argument type: expected table or string, found %s", ts), 2)
 	end
+end
+
+function M.finish()
 end
 
 return M

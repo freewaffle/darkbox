@@ -9,8 +9,8 @@ platforms:
       linkFlags: []
   arm64-ios:
     context:
-      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, profile, profilerext, profiler_remotery, decoder_wav, liveupdate, image]
-      excludeSymbols: [ScriptModelExt, ProfilerBasic, ProfilerRemotery, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt]
+      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, profile, profilerext, profiler_remotery, decoder_wav, liveupdate, image, graphics]
+      excludeSymbols: [ScriptModelExt, ProfilerBasic, ProfilerRemotery, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt, GraphicsAdapterOpenGL]
       symbols: [GraphicsAdapterVulkan]
       libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, profile_null, profilerext_null, liveupdate_null, image_null, graphics_vulkan, MoltenVK]
       frameworks: [Metal, IOSurface, QuartzCore]
@@ -25,18 +25,18 @@ platforms:
       linkFlags: []
   armv7-android:
     context:
-      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, profile, profilerext, profiler_remotery, decoder_wav, liveupdate, image]
+      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, profile, profilerext, profiler_remotery, decoder_wav, liveupdate, image, graphics]
       excludeJars: []
-      excludeSymbols: [ScriptModelExt, ProfilerBasic, ProfilerRemotery, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt]
+      excludeSymbols: [ScriptModelExt, ProfilerBasic, ProfilerRemotery, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt, GraphicsAdapterOpenGL]
       symbols: [GraphicsAdapterVulkan]
       libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, profile_null, profilerext_null, liveupdate_null, image_null, graphics_vulkan]
       linkFlags: []
       jetifier: true
   arm64-android:
     context:
-      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, profile, profilerext, profiler_remotery, decoder_wav, liveupdate, image]
+      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, profile, profilerext, profiler_remotery, decoder_wav, liveupdate, image, graphics]
       excludeJars: []
-      excludeSymbols: [ScriptModelExt, ProfilerBasic, ProfilerRemotery, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt]
+      excludeSymbols: [ScriptModelExt, ProfilerBasic, ProfilerRemotery, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt, GraphicsAdapterOpenGL]
       symbols: [GraphicsAdapterVulkan]
       libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, profile_null, profilerext_null, liveupdate_null, image_null, graphics_vulkan]
       linkFlags: []
@@ -59,58 +59,58 @@ platforms:
       linkFlags: []
   x86_64-linux:
     context:
-      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, profile, profilerext, profiler_remotery, decoder_wav, liveupdate, image]
-      excludeSymbols: [ScriptModelExt, ProfilerBasic, ProfilerRemotery, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt]
+      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, profile, profilerext, profiler_remotery, decoder_wav, liveupdate, image, graphics]
+      excludeSymbols: [ScriptModelExt, ProfilerBasic, ProfilerRemotery, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt, GraphicsAdapterOpenGL]
       symbols: [GraphicsAdapterVulkan]
       libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, profile_null, profilerext_null, liveupdate_null, image_null, platform_vulkan, graphics_vulkan, X11-xcb]
       dynamicLibs: [vulkan]
       linkFlags: []
   arm64-linux:
     context:
-      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, profile, profilerext, profiler_remotery, decoder_wav, liveupdate, image]
-      excludeSymbols: [ScriptModelExt, ProfilerBasic, ProfilerRemotery, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt]
+      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, profile, profilerext, profiler_remotery, decoder_wav, liveupdate, image, graphics]
+      excludeSymbols: [ScriptModelExt, ProfilerBasic, ProfilerRemotery, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt, GraphicsAdapterOpenGLES]
       symbols: [GraphicsAdapterVulkan]
       libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, profile_null, profilerext_null, liveupdate_null, image_null, platform_vulkan, graphics_vulkan, X11-xcb]
       dynamicLibs: [vulkan]
       linkFlags: []
   x86-win32:
     context:
-      excludeLibs: [libphysics, libLinearMath, libBulletDynamics, libBulletCollision, libbox2d_defold, libscript_box2d_defold, libgamesys_model, libgamesys_rig, librig, librecord, vpx, libprofile, libprofilerext, libprofiler_remotery, libdecoder_wav, libliveupdate, libimage, libplatform]
-      excludeSymbols: [ScriptModelExt, ProfilerBasic, ProfilerRemotery, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt]
+      excludeLibs: [libphysics, libLinearMath, libBulletDynamics, libBulletCollision, libbox2d_defold, libscript_box2d_defold, libgamesys_model, libgamesys_rig, librig, librecord, vpx, libprofile, libprofilerext, libprofiler_remotery, libdecoder_wav, libliveupdate, libimage, libplatform, libgraphics]
+      excludeSymbols: [ScriptModelExt, ProfilerBasic, ProfilerRemotery, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt, GraphicsAdapterOpenGL]
       symbols: [GraphicsAdapterVulkan]
       libs: [libphysics_2d.lib, libbox2d.lib, libscript_box2d.lib, libgamesys_rig_null.lib, libgamesys_model_null.lib, librig_null.lib, librecord_null.lib, libprofile_null.lib, libprofilerext_null.lib, libliveupdate_null.lib, libimage_null.lib, libplatform_vulkan.lib, libgraphics_vulkan.lib, vulkan-1.lib]
       linkFlags: []
   x86_64-win32:
     context:
-      excludeLibs: [libphysics, libLinearMath, libBulletDynamics, libBulletCollision, libbox2d_defold, libscript_box2d_defold, libgamesys_model, libgamesys_rig, librig, librecord, vpx, libprofile, libprofilerext, libprofiler_remotery, libdecoder_wav, libliveupdate, libimage, libplatform]
-      excludeSymbols: [ScriptModelExt, ProfilerBasic, ProfilerRemotery, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt]
+      excludeLibs: [libphysics, libLinearMath, libBulletDynamics, libBulletCollision, libbox2d_defold, libscript_box2d_defold, libgamesys_model, libgamesys_rig, librig, librecord, vpx, libprofile, libprofilerext, libprofiler_remotery, libdecoder_wav, libliveupdate, libimage, libplatform, libgraphics]
+      excludeSymbols: [ScriptModelExt, ProfilerBasic, ProfilerRemotery, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt, GraphicsAdapterOpenGL]
       symbols: [GraphicsAdapterVulkan]
       libs: [libphysics_2d.lib, libbox2d.lib, libscript_box2d.lib, libgamesys_rig_null.lib, libgamesys_model_null.lib, librig_null.lib, librecord_null.lib, libprofile_null.lib, libprofilerext_null.lib, libliveupdate_null.lib, libimage_null.lib, libplatform_vulkan.lib, libgraphics_vulkan.lib, vulkan-1.lib]
       linkFlags: []
   js-web:
     context:
-      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, profile, profilerext, profiler_js, decoder_wav, liveupdate, image]
+      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, profile, profilerext, profiler_js, decoder_wav, liveupdate, image, graphics]
       excludeJsLibs: []
-      excludeSymbols: [ScriptModelExt, ProfilerBasic, ProfilerJS, ProfilerRemotery, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt]
+      excludeSymbols: [ScriptModelExt, ProfilerBasic, ProfilerJS, ProfilerRemotery, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt, GraphicsAdapterOpenGL]
       symbols: [GraphicsAdapterWebGPU]
-      libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, profile_null, profilerext_null, liveupdate_null, graphics_webgpu, image_null]
+      libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, profile_null, profilerext_null, liveupdate_null, image_null, graphics_webgpu]
       linkFlags: []
       emscriptenLinkFlags: [USE_WEBGPU=1, GL_WORKAROUND_SAFARI_GETCONTEXT_BUG=0]
   wasm-web:
     context:
-      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, profile, profilerext, profiler_js, decoder_wav, liveupdate, image]
+      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, profile, profilerext, profiler_js, decoder_wav, liveupdate, image, graphics]
       excludeJsLibs: []
-      excludeSymbols: [ScriptModelExt, ProfilerBasic, ProfilerJS, ProfilerRemotery, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt]
+      excludeSymbols: [ScriptModelExt, ProfilerBasic, ProfilerJS, ProfilerRemotery, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt, GraphicsAdapterOpenGL]
       symbols: [GraphicsAdapterWebGPU]
-      libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, profile_null, profilerext_null, liveupdate_null, graphics_webgpu, image_null]
+      libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, profile_null, profilerext_null, liveupdate_null, image_null, graphics_webgpu]
       linkFlags: []
       emscriptenLinkFlags: [USE_WEBGPU=1, GL_WORKAROUND_SAFARI_GETCONTEXT_BUG=0, ASYNCIFY=1, ASYNCIFY_IGNORE_INDIRECT=1, 'ASYNCIFY_ADD=["main","dmEngineCreate(*)","requestDeviceCallback(*)","WebGPUCreateSwapchain(*)","instanceRequestAdapterCallback(*)"]']
   wasm_pthread-web:
     context:
-      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, profile, profilerext, profiler_js, decoder_wav, liveupdate, image]
+      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, profile, profilerext, profiler_js, decoder_wav, liveupdate, image, graphics]
       excludeJsLibs: []
-      excludeSymbols: [ScriptModelExt, ProfilerBasic, ProfilerJS, ProfilerRemotery, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt]
+      excludeSymbols: [ScriptModelExt, ProfilerBasic, ProfilerJS, ProfilerRemotery, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt, GraphicsAdapterOpenGL]
       symbols: [GraphicsAdapterWebGPU]
-      libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, profile_null, profilerext_null, liveupdate_null, graphics_webgpu, image_null]
+      libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, profile_null, profilerext_null, liveupdate_null, image_null, graphics_webgpu]
       linkFlags: []
       emscriptenLinkFlags: [USE_WEBGPU=1, GL_WORKAROUND_SAFARI_GETCONTEXT_BUG=0, ASYNCIFY=1, ASYNCIFY_IGNORE_INDIRECT=1, 'ASYNCIFY_ADD=["main","dmEngineCreate(*)","requestDeviceCallback(*)","WebGPUCreateSwapchain(*)","instanceRequestAdapterCallback(*)"]']
