@@ -38,7 +38,8 @@ local MSG = {
 	REL_INPUT = hash("release_input_focus"),
 	TRIG_RESP = hash("trigger_response"),
 	ACTIVATE_MISSION = hash("activate_mission"),
-	SCRIPT_FINISH = hash("script_finish")
+	SCRIPT_STARTED = hash("script_started"),
+	SCRIPT_FINISHED = hash("script_finished"),
 }
 
 -- идентификаторы игровых объектов.
@@ -239,7 +240,7 @@ function update(self, dt)
 
 	move_camera(pos, 1, go.EASING_OUTCUBIC)
 	
-	pos = nil
+	--pos = nil
 	collectgarbage()
 
 	--hp_trigger()
@@ -249,8 +250,11 @@ function on_message(self, message_id, message, sender)
 	if message_id == MSG.TRIG_RESP then
 		if message.group == ID.GROUP.PAYPHONE and message.enter and not script_active then
 			msg.post(ID.MCTL, MSG.ACTIVATE_MISSION)
-			script_active = true
 		end
+	elseif message_id == MSG.SCRIPT_STARTED then
+		script_active = true
+	elseif message_id == MSG.SCRIPT_FINISHED then
+		script_active = false
 	end
 end
 

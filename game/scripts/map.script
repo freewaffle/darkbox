@@ -19,7 +19,6 @@ Darkbox распространяется в надежде, что она буд
 
 local URL = {
 	FACTORY_SCRIPT = msg.url("game:/factory#script"),
-	MCTL
 }
 
 local MSG = {

@@ -1,0 +1,14 @@
+profiles {
+  name: "16:9"
+  qualifiers {
+    width: 1280
+    height: 720
+  }
+}
+profiles {
+  name: "4:3"
+  qualifiers {
+    width: 768
+    height: 576
+  }
+}

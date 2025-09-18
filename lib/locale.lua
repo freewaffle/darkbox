@@ -20,7 +20,7 @@ Darkbox распространяется в надежде, что она буд
 ----------------------------------------------------------------------
 
 local function init()
-	print("locale!")
+	print("locale service started")
 	
 	local txt
 	do
@@ -45,6 +45,7 @@ local lang = "ru"
 local M = {}
 
 function M.shutdown()
+	print("locale service shutdown")
 	locale = nil
 	collectgarbage()
 end
@@ -56,8 +57,12 @@ function M.init()
 end
 
 function M.get_page(page_name)
-	local page = assert(locale[page_name], "unable to find locale page: " .. page_name)
-	return (assert(page[lang], string.format("unable to find language '%s' in page '%s'", lang, page_name)))
+	if locale ~= nil then
+		local page = assert(locale[page_name], "unable to find locale page: " .. page_name)
+		return (assert(page[lang], string.format("unable to find language '%s' in page '%s'", lang, page_name)))
+	else
+		error("locale service shutdown", 2)
+	end
 end
 
 return M

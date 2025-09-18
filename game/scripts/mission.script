@@ -17,81 +17,235 @@ Darkbox распространяется в надежде, что она буд
 <https://www.gnu.org/licenses/>.
 ]]
 
+local locale = require("lib.locale").get_page("game")
+
+local ID = {
+	SOUND = {
+		SP = "game:/sound#sp",
+		SP_MAX = 7
+	},
+
+	PLAYER = {
+		SCRIPT = msg.url("game:/player#script")
+	},
+
+	HUD = msg.url("game:/ui#hud"),
+}
+
 local MSG = {
-	ACTIVATE_MISSION = hash("activate_mission")
+	ACTIVATE_MISSION = hash("activate_mission"),
+	UPDATE_SPEECH = hash("update_speech"),
+	SOUND_DONE = hash("sound_done"),
+	SCRIPT_STARTED = hash("script_started"),
+	SCRIPT_FINISHED = hash("script_finished")
 }
 
 ------------------------------------------------------------------------
 
-local mkit = require("lib.mkit")
-local locale = require("lib.locale")
+local speechpart_count = 0
+local speechpart_prev = 0
 
-function init(self)
-	self.locale = locale.get_page("game")
+local function speechpart_handle(self, message_id, message, handler)
+	speechpart_count = speechpart_count - 1
+	if speechpart_count > 0 and message_id == MSG.SOUND_DONE then
+		local magic = (math.random(-1, 2) / 20)
+		local r
+		while true do
+			r = math.random(1, ID.SOUND.SP_MAX)
+			if r ~= speechpart_prev then
+				speechpart_prev = r
+				break
+			end
+		end
+		sound.play(ID.SOUND.SP .. r, {
+			--delay = 0.1 * (magic + 0.05),
+			speed = 1 + magic
+		}, speechpart_handle)
+	else
+		speechpart_count = 0
+	end
+end
+
+local function play_speech(count)
+	if count then
+		speechpart_count = speechpart_count + count
+	end
+	math.randomseed(os.time())
+	speechpart_prev = math.random(1, ID.SOUND.SP_MAX)
+	sound.play(ID.SOUND.SP .. speechpart_prev, nil, speechpart_handle)
+end
+
+local speech_stack = {}
+
+local had_speech_before = false
+
+local function hide_speech()
+	msg.post(ID.HUD, MSG.UPDATE_SPEECH, {
+		show = false
+	})
+	sound.stop(ID.SOUND.SPEECH)
+	had_speech_before = false
+end
+
+local function pop_speech()
+	local speech = table.remove(speech_stack, 1)
+	if speech then
+		msg.post(ID.HUD, MSG.UPDATE_SPEECH, {
+			show = true,
+			text = speech
+		})
+		if not had_speech_before then
+			-- sound.play(ID.SOUND.SPEECH)
+			local times = 12 -- math.ceil(#speech * 0.05)
+			play_speech(times)
+			had_speech_before = true
+		end
+	else
+		hide_speech()
+	end
+end
+
+local speech_pop_timer = nil
+
+------------------------------------------------------------------------
+
+-- restart timer `speech_pop_timer`
+local function m_restart_spt()
+	if speech_pop_timer then timer.cancel(speech_pop_timer) end
+	speech_pop_timer = timer.delay(6, true, pop_speech)
+end
+
+local function m_make(fn_init, fn_update)
+	if type(fn_init) ~= "function" then
+		error("fn_init: not a function", 2)
+	end
+
+	if type(fn_update) ~= "function" and type(fn_update) ~= "nil" then
+		error("fn_update: not a function", 2)
+	end
 	
-	self.on_start_script = mkit.make(
-		function (env)
-			mkit.add_speech({
-				self.locale[1]
+	return {
+		env = {},
+		fn_init = fn_init,
+		fn_update = fn_update
+	}
+end
+
+local function m_add_speech(speech)
+	local had_not_speech = #speech_stack <= 0
+
+	for i,s in ipairs(speech) do
+		local type = type(s)
+		if type == "string" then
+			speech_stack[#speech_stack+1] = s
+		elseif type ~= "nil" then
+			error(string.format("invalid type of field %d: expected string, found %s", i, type(s)), 2)
+		end
+	end
+
+	if had_not_speech then
+		pop_speech()
+		m_restart_spt()
+	end
+end
+
+local function m_remove_speech(n)
+	if n then
+		speech_stack[n] = nil
+	else
+		speech_stack = {}
+	end
+end
+
+local function m_interrupt_speech(speech)
+	local ts = type(speech)
+	if ts == "table" or ts == "string" then
+		speechpart_count = 0
+		sound.stop(ID.SOUND.SPEECHPART)
+
+		m_remove_speech()
+		had_speech_before = false
+		m_add_speech(speech)
+	else
+		error(string.format("invalid argument type: expected table or string, found %s", ts), 2)
+	end
+end
+
+local function m_finish(succeed)
+	msg.post(ID.PLAYER.SCRIPT, MSG.SCRIPT_FINISHED)
+end
+
+------------------------------------------------------------------------
+
+local ms_start = m_make(
+	function ()
+		m_add_speech({
+			locale[1]
+		})
+	end
+)
+
+local ms = {
+	m_make(
+		function ()
+			-- title
+			m_add_speech({
+				locale[2],
 			})
 		end
-		-- function (env)
-		-- 	print("mission frame")
-		-- end
 	)
-	
-	self.scripts = {
-		mkit.make(
-			function (env)
-				-- title
-				mkit.interrupt_speech({
-					self.locale[2],
-					self.locale[3],
-				})
-			end
-			-- function (env)
-			-- end
-		)
-	}
+}
 
-	self.ignore_fn_update = false
-	self.progress = 0
+local progress = 0
+local fn_init, fn_update;
 
-	self.fn_init, self.fn_update = nil, nil
+local function fetch()
+	local current = ms[progress]
+	fn_init = current.fn_init
+	fn_update = current.fn_update
+end
 
-	self.get_fn_init = function ()
-		return self.scripts[self.progress].fn_init
-	end
-	
-	self.get_fn_update = function ()
-		return self.scripts[self.progress].fn_update
-	end
+local function try(fn, arg)
+	if type(fn) == "function" then
+		local handler = function (msg)
+			print(string.format("ERROR:%d: %s", progress, msg))
 
-	self.fetch = function ()
-		self.fn_init, self.fn_update = self.get_fn_init(), self.get_fn_update()
-	end
-
-	self.pcall = function (func)
-		xpcall(func, function (msg)
-			print("ERROR: " .. msg, 0)
+			msg.post(ID.PLAYER.SCRIPT, MSG.SCRIPT_FINISHED)
 			msg.post("@system:", "exit", {code = 1})
-		end)
+		end
+
+		xpcall(function() fn(arg) end, handler)
+	else
+		error("not a function", 2)
+	end
+end
+
+------------------------------------------------------------------------
+
+collectgarbage()
+
+function init(self)
+	if ms_start then
+		try(ms_start.fn_init)
+		collectgarbage()
 	end
 end
 
 function update(self, dt)
-	if self.fn_update then
-		self.pcall(self.fn_update)
+	if fn_update then
+		try(fn_update)
+		collectgarbage()
 	end
 end
 
 function on_message(self, message_id, message, sender)
 	if message_id == MSG.ACTIVATE_MISSION then
-		if self.scripts[self.progress+1] ~= nil then
-			self.ignore_fn_update = false
-			self.progress = self.progress + 1
-			self.fetch()
-			self.pcall(assert(self.fn_init, "undeclared init function"))
+		if ms[progress+1] ~= nil then
+			progress = progress + 1
+			fetch()
+			msg.post(ID.PLAYER.SCRIPT, MSG.SCRIPT_STARTED)
+			try(assert(fn_init, "undeclared init function"))
+			collectgarbage()
 		end
 	end
 end
