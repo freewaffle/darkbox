@@ -43,12 +43,25 @@ function on_message(self, message_id, message, sender)
 			error("unknown type: " .. TYPE, 2)
 		end
 	elseif message_id == MSG.TOGGLE then
-		local payphone = payphones[message.id]
-		if payphone ~= nil then
-			if message.enable then
-				msg.post(payphone[ID.ARROW], "enable")
+		for n, pair in ipairs(message) do
+			local TYPE, OBJ_ID, MODE = pair[1], pair[2], pair[3]
+
+			if MODE == true then
+				MODE = "enable"
+			elseif MODE == false then
+				MODE = "disable"
 			else
-				msg.post(payphone[ID.ARROW], "disable")
+				error(string.format("pair %d: illegal mode", n), 2)
+			end
+
+			local err = function ()
+				error(string.format("unable to fetch object of type '%s' with id %d (in pair %d)", TYPE, OBJ_ID, n), 2)
+			end
+			
+			if TYPE == "payphone" then
+				msg.post(assert(payphones[OBJ_ID], err)[ID.ARROW], MODE)
+			else
+				error(string.format("pair %d: illegal object type '%s'", n, TYPE), 2)
 			end
 		end
 	end
