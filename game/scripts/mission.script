@@ -37,7 +37,8 @@ local MSG = {
 	UPDATE_SPEECH = hash("update_speech"),
 	SOUND_DONE = hash("sound_done"),
 	SCRIPT_STARTED = hash("script_started"),
-	SCRIPT_FINISHED = hash("script_finished")
+	SCRIPT_FINISHED = hash("script_finished"),
+	SET_MPHONES = hash("set_mphones")
 }
 
 ------------------------------------------------------------------------
@@ -177,6 +178,8 @@ end
 
 ------------------------------------------------------------------------
 
+local mphones = nil
+
 local ms_start = m_make(
 	function ()
 		m_add_speech({
@@ -189,7 +192,7 @@ local ms = {
 	m_make(
 		function ()
 			-- title
-			m_add_speech({
+			m_interrupt_speech({
 				locale[2],
 			})
 		end

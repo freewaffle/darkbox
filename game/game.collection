@@ -63,6 +63,7 @@ embedded_instances {
 }
 embedded_instances {
   id: "map"
+  children: "factory"
   data: "components {\n"
   "  id: \"tilemap\"\n"
   "  component: \"/game/maps/metacity.tilemap\"\n"
@@ -96,20 +97,6 @@ embedded_instances {
   data: "components {\n"
   "  id: \"hud\"\n"
   "  component: \"/game/hud.gui\"\n"
-  "}\n"
-  ""
-}
-embedded_instances {
-  id: "factory"
-  data: "components {\n"
-  "  id: \"script\"\n"
-  "  component: \"/game/scripts/factory.script\"\n"
-  "}\n"
-  "embedded_components {\n"
-  "  id: \"payphone\"\n"
-  "  type: \"collectionfactory\"\n"
-  "  data: \"prototype: \\\"/assets/collections/payphone.collection\\\"\\n"
-  "\"\n"
   "}\n"
   ""
 }
@@ -162,6 +149,16 @@ embedded_instances {
   "  type: \"sound\"\n"
   "  data: \"sound: \\\"/assets/sounds/misc/sp/sp7.ogg\\\"\\n"
   "group: \\\"effects\\\"\\n"
+  "\"\n"
+  "}\n"
+  ""
+}
+embedded_instances {
+  id: "factory"
+  data: "embedded_components {\n"
+  "  id: \"payphone\"\n"
+  "  type: \"collectionfactory\"\n"
+  "  data: \"prototype: \\\"/assets/collections/payphone.collection\\\"\\n"
   "\"\n"
   "}\n"
   ""

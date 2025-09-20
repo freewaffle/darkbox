@@ -61,7 +61,7 @@ function M.get_page(page_name)
 		local page = assert(locale[page_name], "unable to find locale page: " .. page_name)
 		return (assert(page[lang], string.format("unable to find language '%s' in page '%s'", lang, page_name)))
 	else
-		error("locale service shutdown", 2)
+		error("start the service!", 2)
 	end
 end
 

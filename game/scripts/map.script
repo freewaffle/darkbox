@@ -17,33 +17,103 @@ Darkbox распространяется в надежде, что она буд
 <https://www.gnu.org/licenses/>.
 ]]
 
-local URL = {
-	FACTORY_SCRIPT = msg.url("game:/factory#script"),
+local ID = {
+	ARROW = hash("/arrow"),
 }
 
 local MSG = {
-	ADD = hash("add")
+	LOAD_MAP = hash("load_map"),
+	ADD = hash("add"),
+	TOGGLE = hash("toggle"),
 }
 
-function init(self)
-	do
-		local payphone = function (x, y)
-			return {
-				type = "payphone",
-				position = vmath.vector3(128*x - 64, 128*y - 64, 0.9)
-			}
-		end
+local FACTORY = {
+	PAYPHONE = msg.url("game:/factory#payphone")
+}
 
-		local payphones = {
-			payphone(7, 3),
-			payphone(8, 3),
-			payphone(9, 3),
-			payphone(10, 3),
+local payphones = {}
+
+local function add_object(obj)
+	local TYPE = obj.type
+	if TYPE == "payphone" then
+		payphones[#payphones+1] = collectionfactory.create(FACTORY.PAYPHONE, obj.position)
+		go.animate(payphones[#payphones][ID.ARROW], "position.y", go.PLAYBACK_LOOP_PINGPONG, -15, go.EASING_INOUTSINE, 2)
+	else
+		error("unknown type: " .. TYPE, 2)
+	end
+end
+
+local function load_map(name)
+	print("loading map: " .. name)
+
+	local payphone = function (tx, ty, sm)
+		return {
+			type = "payphone",
+			position = vmath.vector3(128*tx - 64, 128*ty - 64, 0.9),
+			starts_mission = sm,
 		}
+	end
 
-		for _, obj in ipairs(payphones) do
-			msg.post(URL.FACTORY_SCRIPT, MSG.ADD, obj)
+	local objects = {}
+	
+	if name == "metacity" then
+		objects.payphones = {
+			payphone(7, 3, true),
+			payphone(8, 3, true),
+			payphone(9, 3, true),
+			payphone(10, 3, true),
+		}
+	else
+		print("no such map: " .. name)
+		msg.post("@system:", "exit", {code = 1})
+	end
+
+	local mphones = {}
+
+	for key, list in pairs(objects) do
+		for id, obj in ipairs(list) do
+			add_object(obj)
+
+			if obj.starts_mission == true then
+				mphones[#mphones+1] = id
+			end
 		end
 	end
+
 	collectgarbage()
+	print("finished!")
+end
+
+function init(self)
+	load_map("metacity")
+end
+
+function on_message(self, message_id, message)
+	if message_id == MSG.ADD then
+		add_object(message)
+	elseif message_id == MSG.TOGGLE then
+		for n, pair in ipairs(message) do
+			local TYPE, OBJ_ID, MODE = pair[1], pair[2], pair[3]
+
+			if MODE == true then
+				MODE = "enable"
+			elseif MODE == false then
+				MODE = "disable"
+			else
+				error(string.format("pair %d: illegal mode", n), 2)
+			end
+
+			local err = function ()
+				error(string.format("unable to fetch object of type '%s' with id %d (in pair %d)", TYPE, OBJ_ID, n), 2)
+			end
+
+			if TYPE == "payphone" then
+				msg.post(assert(payphones[OBJ_ID], err)[ID.ARROW], MODE)
+			else
+				error(string.format("pair %d: illegal object type '%s'", n, TYPE), 2)
+			end
+		end
+	elseif message_id == MSG.LOAD_MAP then
+		load_map(assert(message.name, error("expected field `name`", 2)))
+	end
 end
