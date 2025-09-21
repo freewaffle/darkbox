@@ -38,7 +38,7 @@ local MSG = {
 	SOUND_DONE = hash("sound_done"),
 	SCRIPT_STARTED = hash("script_started"),
 	SCRIPT_FINISHED = hash("script_finished"),
-	SET_MPHONES = hash("set_mphones")
+	SET_PAYPHONES = hash("set_payphones")
 }
 
 ------------------------------------------------------------------------
@@ -84,7 +84,6 @@ local function hide_speech()
 	msg.post(ID.HUD, MSG.UPDATE_SPEECH, {
 		show = false
 	})
-	sound.stop(ID.SOUND.SPEECH)
 	had_speech_before = false
 end
 
@@ -145,7 +144,9 @@ local function m_add_speech(speech)
 	end
 
 	if had_not_speech then
+		-- отображаем речь:
 		pop_speech()
+		
 		m_restart_spt()
 	end
 end
@@ -159,26 +160,23 @@ local function m_remove_speech(n)
 end
 
 local function m_interrupt_speech(speech)
-	local ts = type(speech)
-	if ts == "table" or ts == "string" then
-		speechpart_count = 0
-		sound.stop(ID.SOUND.SPEECHPART)
+	speechpart_count = 0
+	sound.stop(ID.SOUND.SPEECHPART)
 
-		m_remove_speech()
-		had_speech_before = false
-		m_add_speech(speech)
-	else
-		error(string.format("invalid argument type: expected table or string, found %s", ts), 2)
-	end
+	m_remove_speech()
+	had_speech_before = false
+	m_add_speech(speech)
 end
 
-local function m_finish(succeed)
+local payphones = {}
+local mphones = { 1, 2, 3, 4 }
+local activated_phone;
+
+local function m_finish(succeed, deprecate_phone)
 	msg.post(ID.PLAYER.SCRIPT, MSG.SCRIPT_FINISHED)
 end
 
 ------------------------------------------------------------------------
-
-local mphones = nil
 
 local ms_start = m_make(
 	function ()
@@ -243,12 +241,21 @@ end
 
 function on_message(self, message_id, message, sender)
 	if message_id == MSG.ACTIVATE_MISSION then
+		local activate = false
+		if message.payphone_id ~= nil then
+			for n, id in ipairs(payphones) do
+				-- do things
+			end
 		if ms[progress+1] ~= nil then
 			progress = progress + 1
 			fetch()
 			msg.post(ID.PLAYER.SCRIPT, MSG.SCRIPT_STARTED)
 			try(assert(fn_init, "undeclared init function"))
 			collectgarbage()
+		end
+	elseif message_id == MSG.SET_PAYPHONES then
+		if type(message) == "table" then
+			payphones = message
 		end
 	end
 end

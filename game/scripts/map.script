@@ -19,6 +19,11 @@ Darkbox распространяется в надежде, что она буд
 
 local ID = {
 	ARROW = hash("/arrow"),
+	PAYPHONE = hash("/payphone")
+}
+
+local URL = {
+	MCTL = msg.url("game:/player#mission")
 }
 
 local MSG = {
@@ -31,13 +36,13 @@ local FACTORY = {
 	PAYPHONE = msg.url("game:/factory#payphone")
 }
 
-local payphones = {}
+local PAYPHONES = {}
 
 local function add_object(obj)
 	local TYPE = obj.type
 	if TYPE == "payphone" then
-		payphones[#payphones+1] = collectionfactory.create(FACTORY.PAYPHONE, obj.position)
-		go.animate(payphones[#payphones][ID.ARROW], "position.y", go.PLAYBACK_LOOP_PINGPONG, -15, go.EASING_INOUTSINE, 2)
+		PAYPHONES[#PAYPHONES+1] = collectionfactory.create(FACTORY.PAYPHONE, obj.position)
+		go.animate(PAYPHONES[#PAYPHONES][ID.ARROW], "position.y", go.PLAYBACK_LOOP_PINGPONG, -15, go.EASING_INOUTSINE, 2)
 	else
 		error("unknown type: " .. TYPE, 2)
 	end
@@ -46,41 +51,59 @@ end
 local function load_map(name)
 	print("loading map: " .. name)
 
-	local payphone = function (tx, ty, sm)
-		return {
-			type = "payphone",
-			position = vmath.vector3(128*tx - 64, 128*ty - 64, 0.9),
-			starts_mission = sm,
-		}
-	end
+	-- 1. загрузка и установка объектов
+	do
+		local objects = {}
+		
+		local payphone = function (tx, ty, sm)
+			return {
+				type = "payphone",
+				position = vmath.vector3(128*tx - 64, 128*ty - 64, 0.9),
+				starts_mission = sm,
+			}
+		end
+		
+		if name == "metacity" then
+			objects.payphones = {
+				payphone(7, 3, true),
+				payphone(8, 3, true),
+				payphone(9, 3, true),
+				payphone(10, 3, true),
+			}
+		else
+			print("no such map: " .. name)
+			msg.post("@system:", "exit", {code = 1})
+		end
 
-	local objects = {}
-	
-	if name == "metacity" then
-		objects.payphones = {
-			payphone(7, 3, true),
-			payphone(8, 3, true),
-			payphone(9, 3, true),
-			payphone(10, 3, true),
-		}
-	else
-		print("no such map: " .. name)
-		msg.post("@system:", "exit", {code = 1})
-	end
+		for key, list in pairs(objects) do
+			for id, obj in ipairs(list) do
+				add_object(obj)
 
-	local mphones = {}
-
-	for key, list in pairs(objects) do
-		for id, obj in ipairs(list) do
-			add_object(obj)
-
-			if obj.starts_mission == true then
-				mphones[#mphones+1] = id
+				-- if obj.starts_mission == true then
+				-- 	mphones[#mphones+1] = id
+				-- end
 			end
 		end
-	end
+	end collectgarbage()
 
-	collectgarbage()
+	-- 2. сбор нужных данных об объектах и их отправка
+	do
+		-- ид телефонов
+		local p_ids = {}
+		
+		----------------------------------------------------------------
+		-- 2.1. сбор нужных данных
+		
+		for n, payphone in ipairs(PAYPHONES) do
+			p_ids[#p_ids+1] = payphone[ID.PAYPHONE]
+		end
+
+		----------------------------------------------------------------
+		-- 2.2. отправка данных
+
+		msg.post(URL.MCTL, "set_payphones", p_ids)
+	end collectgarbage()
+
 	print("finished!")
 end
 
@@ -108,7 +131,7 @@ function on_message(self, message_id, message)
 			end
 
 			if TYPE == "payphone" then
-				msg.post(assert(payphones[OBJ_ID], err)[ID.ARROW], MODE)
+				msg.post(assert(PAYPHONES[OBJ_ID], err)[ID.ARROW], MODE)
 			else
 				error(string.format("pair %d: illegal object type '%s'", n, TYPE), 2)
 			end
