@@ -19,7 +19,7 @@ Darkbox распространяется в надежде, что она буд
 
 local locale = require("lib.locale").get_page("game")
 
-local ID = {
+local URL = {
 	SOUND = {
 		SP = "game:/sound#sp",
 		SP_MAX = 7
@@ -30,15 +30,15 @@ local ID = {
 	},
 
 	HUD = msg.url("game:/ui#hud"),
+	MAP_CTL = msg.url("game:/map#script")
 }
 
 local MSG = {
 	ACTIVATE_MISSION = hash("activate_mission"),
 	UPDATE_SPEECH = hash("update_speech"),
 	SOUND_DONE = hash("sound_done"),
-	SCRIPT_STARTED = hash("script_started"),
-	SCRIPT_FINISHED = hash("script_finished"),
-	SET_PAYPHONES = hash("set_payphones")
+	SET_PAYPHONES = hash("set_payphones"),
+	TOGGLE = hash("toggle")
 }
 
 ------------------------------------------------------------------------
@@ -52,13 +52,13 @@ local function speechpart_handle(self, message_id, message, handler)
 		local magic = (math.random(-1, 2) / 20)
 		local r
 		while true do
-			r = math.random(1, ID.SOUND.SP_MAX)
+			r = math.random(1, URL.SOUND.SP_MAX)
 			if r ~= speechpart_prev then
 				speechpart_prev = r
 				break
 			end
 		end
-		sound.play(ID.SOUND.SP .. r, {
+		sound.play(URL.SOUND.SP .. r, {
 			--delay = 0.1 * (magic + 0.05),
 			speed = 1 + magic
 		}, speechpart_handle)
@@ -72,8 +72,8 @@ local function play_speech(count)
 		speechpart_count = speechpart_count + count
 	end
 	math.randomseed(os.time())
-	speechpart_prev = math.random(1, ID.SOUND.SP_MAX)
-	sound.play(ID.SOUND.SP .. speechpart_prev, nil, speechpart_handle)
+	speechpart_prev = math.random(1, URL.SOUND.SP_MAX)
+	sound.play(URL.SOUND.SP .. speechpart_prev, nil, speechpart_handle)
 end
 
 local speech_stack = {}
@@ -81,7 +81,7 @@ local speech_stack = {}
 local had_speech_before = false
 
 local function hide_speech()
-	msg.post(ID.HUD, MSG.UPDATE_SPEECH, {
+	msg.post(URL.HUD, MSG.UPDATE_SPEECH, {
 		show = false
 	})
 	had_speech_before = false
@@ -90,7 +90,7 @@ end
 local function pop_speech()
 	local speech = table.remove(speech_stack, 1)
 	if speech then
-		msg.post(ID.HUD, MSG.UPDATE_SPEECH, {
+		msg.post(URL.HUD, MSG.UPDATE_SPEECH, {
 			show = true,
 			text = speech
 		})
@@ -161,7 +161,7 @@ end
 
 local function m_interrupt_speech(speech)
 	speechpart_count = 0
-	sound.stop(ID.SOUND.SPEECHPART)
+	sound.stop(URL.SOUND.SPEECHPART)
 
 	m_remove_speech()
 	had_speech_before = false
@@ -170,10 +170,35 @@ end
 
 local payphones = {}
 local mphones = { 1, 2, 3, 4 }
-local activated_phone;
+local activated_payphone;
+
+--
+-- ```lua
+-- local switches = {
+--     { 1, false },
+--     { 2, true }
+-- }
+-- m_toggle_payphones(switches) --> выключит телефон 1 и включит телефон 2
+--
+-- m_toggle_payphones(true) --> передача true/false включит/выключит телефоны
+-- ```
+local function m_toggle_payphones(switches)
+	if type(switches) == "boolean" then
+		for n, id in ipairs(mphones) do
+			msg.post(URL.MAP_CTL, MSG.TOGGLE, { "payphone", id, switches })
+		end
+	elseif type(switches) == "table" then
+		for n, switch in ipairs(switches) do
+			msg.post(URL.MAP_CTL, MSG.TOGGLE, { "payphone", switch[1], switch[2] })
+		end
+	end
+end
 
 local function m_finish(succeed, deprecate_phone)
-	msg.post(ID.PLAYER.SCRIPT, MSG.SCRIPT_FINISHED)
+	if deprecate_phone then
+		table.remove(mphones, activated_payphone)
+	end
+	
 end
 
 ------------------------------------------------------------------------
@@ -200,18 +225,11 @@ local ms = {
 local progress = 0
 local fn_init, fn_update;
 
-local function fetch()
-	local current = ms[progress]
-	fn_init = current.fn_init
-	fn_update = current.fn_update
-end
-
 local function try(fn, arg)
 	if type(fn) == "function" then
 		local handler = function (msg)
 			print(string.format("ERROR:%d: %s", progress, msg))
 
-			msg.post(ID.PLAYER.SCRIPT, MSG.SCRIPT_FINISHED)
 			msg.post("@system:", "exit", {code = 1})
 		end
 
@@ -219,6 +237,21 @@ local function try(fn, arg)
 	else
 		error("not a function", 2)
 	end
+end
+
+local function fetch(n)
+	local current = ms[n]
+	fn_init = current.fn_init
+	fn_update = current.fn_update
+end
+
+local function start_next()
+	progress = progress + 1
+	fetch(progress)
+	
+	collectgarbage()
+	
+	try(assert(fn_init, "undeclared init function"))
 end
 
 ------------------------------------------------------------------------
@@ -242,16 +275,22 @@ end
 function on_message(self, message_id, message, sender)
 	if message_id == MSG.ACTIVATE_MISSION then
 		local activate = false
+		
 		if message.payphone_id ~= nil then
-			for n, id in ipairs(payphones) do
-				-- do things
+			for n, id in ipairs(mphones) do
+				if payphones[id] == message.payphone_id then
+					activated_payphone = id
+					activate = true
+					break
+				end
 			end
-		if ms[progress+1] ~= nil then
-			progress = progress + 1
-			fetch()
-			msg.post(ID.PLAYER.SCRIPT, MSG.SCRIPT_STARTED)
-			try(assert(fn_init, "undeclared init function"))
-			collectgarbage()
+		else
+			print("force activating mission since `payphone_id` is not present")
+			activate = true
+		end
+		
+		if activate and ms[progress+1] ~= nil then
+			start_next()
 		end
 	elseif message_id == MSG.SET_PAYPHONES then
 		if type(message) == "table" then

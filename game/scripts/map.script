@@ -48,6 +48,28 @@ local function add_object(obj)
 	end
 end
 
+local function toggle_object(data)
+	local CLASS, OBJ_ID, MODE = data[1], data[2], data[3]
+
+	if MODE == true then
+		MODE = "enable"
+	elseif MODE == false then
+		MODE = "disable"
+	else
+		error(string.format("invalid mode '%s'", MODE), 2)
+	end
+
+	if CLASS == "payphone" then
+		local payphone = assert(
+			PAYPHONES[OBJ_ID],
+			string.format("unable to fetch object of class '%s' with id %d", CLASS, OBJ_ID)
+		)
+		msg.post(payphone[ID.ARROW], MODE)
+	else
+		error(string.format("unknown object class '%s'", CLASS), 2)
+	end
+end
+
 local function load_map(name)
 	print("loading map: " .. name)
 
@@ -115,27 +137,7 @@ function on_message(self, message_id, message)
 	if message_id == MSG.ADD then
 		add_object(message)
 	elseif message_id == MSG.TOGGLE then
-		for n, pair in ipairs(message) do
-			local TYPE, OBJ_ID, MODE = pair[1], pair[2], pair[3]
-
-			if MODE == true then
-				MODE = "enable"
-			elseif MODE == false then
-				MODE = "disable"
-			else
-				error(string.format("pair %d: illegal mode", n), 2)
-			end
-
-			local err = function ()
-				error(string.format("unable to fetch object of type '%s' with id %d (in pair %d)", TYPE, OBJ_ID, n), 2)
-			end
-
-			if TYPE == "payphone" then
-				msg.post(assert(PAYPHONES[OBJ_ID], err)[ID.ARROW], MODE)
-			else
-				error(string.format("pair %d: illegal object type '%s'", n, TYPE), 2)
-			end
-		end
+		toggle_object(message)
 	elseif message_id == MSG.LOAD_MAP then
 		load_map(assert(message.name, error("expected field `name`", 2)))
 	end

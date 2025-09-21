@@ -235,7 +235,7 @@ function update(self, dt)
 		self.velocity = vmath.vector3()
 	end
 
-	move_camera(pos, 1, go.EASING_OUTCUBIC)
+	move_camera(pos, 0.5, go.EASING_OUTCUBIC)
 	
 	--pos = nil
 	collectgarbage()
@@ -246,7 +246,7 @@ end
 function on_message(self, message_id, message, sender)
 	if message_id == MSG.TRIG_RESP then
 		if message.group == ID.GROUP.PAYPHONE and message.enter then
-			msg.post(ID.MCTL, MSG.ACTIVATE_MISSION, { id = message.other_id })
+			msg.post(ID.MCTL, MSG.ACTIVATE_MISSION, { payphone_id = message.other_id })
 		end
 	end
 end
