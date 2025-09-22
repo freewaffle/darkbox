@@ -26,6 +26,7 @@ local URL = {
 	},
 
 	PLAYER = {
+		THIS = msg.url("game:/player"),
 		SCRIPT = msg.url("game:/player#script")
 	},
 
@@ -109,12 +110,6 @@ local speech_pop_timer = nil
 
 ------------------------------------------------------------------------
 
--- restart timer `speech_pop_timer`
-local function m_restart_spt()
-	if speech_pop_timer then timer.cancel(speech_pop_timer) end
-	speech_pop_timer = timer.delay(6, true, pop_speech)
-end
-
 local function m_make(fn_init, fn_update)
 	if type(fn_init) ~= "function" then
 		error("fn_init: not a function", 2)
@@ -129,6 +124,15 @@ local function m_make(fn_init, fn_update)
 		fn_init = fn_init,
 		fn_update = fn_update
 	}
+end
+
+local function m_smart_make(table)
+end
+
+-- restart `speech_pop_timer` timer
+local function m_restart_spt()
+	if speech_pop_timer then timer.cancel(speech_pop_timer) end
+	speech_pop_timer = timer.delay(6, true, pop_speech)
 end
 
 local function m_add_speech(speech)
@@ -168,9 +172,22 @@ local function m_interrupt_speech(speech)
 	m_add_speech(speech)
 end
 
+local function m_get_player_tile()
+	local pos = go.get_position(URL.PLAYER.THIS)
+	local x, y = 1 + math.floor(pos.x / 127), 1 + math.floor(pos.y / 127)
+	collectgarbage()
+	return x, y
+end
+
+------------------------------------------------------------------------
+
+local fn_init, fn_update;
+
 local payphones = {}
 local mphones = { 1, 2, 3, 4 }
 local activated_payphone;
+
+local disabled = false
 
 --
 -- ```lua
@@ -180,7 +197,7 @@ local activated_payphone;
 -- }
 -- m_toggle_payphones(switches) --> выключит телефон 1 и включит телефон 2
 --
--- m_toggle_payphones(true) --> передача true/false включит/выключит телефоны
+-- m_toggle_payphones(true) --> передача true/false включит/выключит телефоны с миссиями
 -- ```
 local function m_toggle_payphones(switches)
 	if type(switches) == "boolean" then
@@ -198,32 +215,46 @@ local function m_finish(succeed, deprecate_phone)
 	if deprecate_phone then
 		table.remove(mphones, activated_payphone)
 	end
+	m_toggle_payphones(true)
 	
+	fn_init, fn_update = nil, nil
+
+	collectgarbage()
 end
 
 ------------------------------------------------------------------------
 
-local ms_start = m_make(
-	function ()
-		m_add_speech({
-			locale[1]
-		})
-	end
-)
+local progress = 0
 
-local ms = {
-	m_make(
-		function ()
+local scripts = {
+	start = {
+		init = function ()
+			m_add_speech({
+				locale[1]
+			})
+		end
+	},
+	
+	[1] = {
+		init = function ()
 			-- title
 			m_interrupt_speech({
 				locale[2],
 			})
+			--m_finish(true, true)
+		end,
+		
+		update = function ()
+			print(m_get_player_tile())
 		end
-	)
+	}
 }
 
-local progress = 0
-local fn_init, fn_update;
+local ms_start = m_make(scripts.start.init)
+
+local ms = {
+	m_make(scripts[1].init, scripts[1].update)
+}
 
 local function try(fn, arg)
 	if type(fn) == "function" then
@@ -245,7 +276,11 @@ local function fetch(n)
 	fn_update = current.fn_update
 end
 
-local function start_next()
+local function next_mission()
+	return ms[progress+1]
+end
+
+local function start_next_mission()
 	progress = progress + 1
 	fetch(progress)
 	
@@ -270,6 +305,12 @@ function update(self, dt)
 		try(fn_update)
 		collectgarbage()
 	end
+
+	if not disabled and next_mission() == nil then
+		print("no next script found")
+		disabled = true
+		m_toggle_payphones(false)
+	end
 end
 
 function on_message(self, message_id, message, sender)
@@ -290,7 +331,8 @@ function on_message(self, message_id, message, sender)
 		end
 		
 		if activate and ms[progress+1] ~= nil then
-			start_next()
+			m_toggle_payphones(false)
+			start_next_mission()
 		end
 	elseif message_id == MSG.SET_PAYPHONES then
 		if type(message) == "table" then
