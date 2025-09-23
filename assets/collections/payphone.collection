@@ -2,11 +2,19 @@ name: "payphone"
 instances {
   id: "arrow"
   prototype: "/assets/go/arrow.go"
+  position {
+    y: -70.0
+  }
+}
+instances {
+  id: "shadow"
+  prototype: "/assets/go/cshadow.go"
 }
 scale_along_z: 0
 embedded_instances {
   id: "payphone"
   children: "arrow"
+  children: "shadow"
   data: "embedded_components {\n"
   "  id: \"actzone\"\n"
   "  type: \"collisionobject\"\n"
@@ -85,7 +93,7 @@ embedded_instances {
   "\"\n"
   "  position {\n"
   "    y: 64.0\n"
-  "    z: 0.1\n"
+  "    z: 1.5\n"
   "  }\n"
   "}\n"
   "embedded_components {\n"
@@ -94,21 +102,6 @@ embedded_instances {
   "  data: \"sound: \\\"/assets/sounds/misc/payphone.ogg\\\"\\n"
   "looping: 1\\n"
   "\"\n"
-  "}\n"
-  "embedded_components {\n"
-  "  id: \"shadow\"\n"
-  "  type: \"sprite\"\n"
-  "  data: \"default_animation: \\\"shadow\\\"\\n"
-  "material: \\\"/builtins/materials/sprite.material\\\"\\n"
-  "textures {\\n"
-  "  sampler: \\\"texture_sampler\\\"\\n"
-  "  texture: \\\"/assets/atlas/go.atlas\\\"\\n"
-  "}\\n"
-  "\"\n"
-  "  scale {\n"
-  "    x: 0.6\n"
-  "    y: 0.6\n"
-  "  }\n"
   "}\n"
   ""
 }

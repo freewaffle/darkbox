@@ -19,7 +19,10 @@ Darkbox распространяется в надежде, что она буд
 
 local ID = {
 	ARROW = hash("/arrow"),
-	PAYPHONE = hash("/payphone")
+	PAYPHONE = hash("/payphone"),
+	POSITION = {
+		Y = hash("position.y")
+	}
 }
 
 local URL = {
@@ -33,16 +36,23 @@ local MSG = {
 }
 
 local FACTORY = {
-	PAYPHONE = msg.url("game:/factory#payphone")
+	PAYPHONE = msg.url("game:/factory#payphone"),
+	TARGET_PTR = msg.url("game:/factory#target_ptr")
 }
 
 local PAYPHONES = {}
+local TARGET_PTRS = {}
 
 local function add_object(obj)
 	local TYPE = obj.type
 	if TYPE == "payphone" then
-		PAYPHONES[#PAYPHONES+1] = collectionfactory.create(FACTORY.PAYPHONE, obj.position)
-		go.animate(PAYPHONES[#PAYPHONES][ID.ARROW], "position.y", go.PLAYBACK_LOOP_PINGPONG, -15, go.EASING_INOUTSINE, 2)
+		local instance = collectionfactory.create(FACTORY.PAYPHONE, obj.position)
+		PAYPHONES[#PAYPHONES+1] = instance
+
+		go.animate(instance[ID.ARROW], ID.POSITION.Y, go.PLAYBACK_LOOP_PINGPONG, -60, go.EASING_INOUTSINE, 2)
+	elseif TYPE == "target_ptr" then
+		local instance = collectionfactory.create(FACTORY.TARGET_PTR, obj.position)
+		TARGET_PTRS[#TARGET_PTRS+1] = instance
 	else
 		error("unknown type: " .. TYPE, 2)
 	end
@@ -62,11 +72,11 @@ local function toggle_object(data)
 	if CLASS == "payphone" then
 		local payphone = assert(
 			PAYPHONES[OBJ_ID],
-			string.format("unable to fetch object of class '%s' with id %d", CLASS, OBJ_ID)
+			string.format("unable to fetch object of class %q with id %d", CLASS, OBJ_ID)
 		)
 		msg.post(payphone[ID.ARROW], MODE)
 	else
-		error(string.format("unknown object class '%s'", CLASS), 2)
+		error(string.format("unknown object class %q", CLASS), 2)
 	end
 end
 
@@ -77,29 +87,33 @@ local function load_map(name)
 	do
 		local objects = {}
 		
-		local payphone = function (tx, ty, sm)
+		local payphone = function (tx, ty)
 			return {
 				type = "payphone",
-				position = vmath.vector3(128*tx - 64, 128*ty - 64, 0.9),
-				starts_mission = sm,
+				position = vmath.vector3(128*tx - 64, 128*ty - 64, 1),
 			}
 		end
 		
 		if name == "metacity" then
 			objects.payphones = {
-				payphone(7, 3, true),
-				payphone(8, 3, true),
-				payphone(9, 3, true),
-				payphone(10, 3, true),
+				payphone(7, 3),
+				payphone(8, 3),
+				payphone(9, 3),
+				payphone(10, 3),
 			}
 		else
-			print("no such map: " .. name)
+			print("FATAL: no such map: " .. name)
 			msg.post("@system:", "exit", {code = 1})
 		end
 
 		for key, list in pairs(objects) do
 			for id, obj in ipairs(list) do
-				add_object(obj)
+				local err = function (errmsg)
+					print("FATAL: " .. errmsg)
+					msg.post("@system:", "exit", {code = 1})
+				end
+				
+				xpcall(function() add_object(obj) end, err)
 
 				-- if obj.starts_mission == true then
 				-- 	mphones[#mphones+1] = id

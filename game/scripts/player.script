@@ -204,8 +204,8 @@ function init(self)
 	go.set(ID.CAMERA.CAM, "orthographic_zoom", 0.5)
 	zoom_camera(1.5, 2)
 
-	collectgarbage()
 	msg.post(ID.THIS_SCRIPT, MSG.ACQ_INPUT)
+	collectgarbage()
 end
 
 function update(self, dt)

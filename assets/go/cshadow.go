@@ -1,7 +1,7 @@
 embedded_components {
-  id: "arrow"
+  id: "shadow"
   type: "sprite"
-  data: "default_animation: \"arrow\"\n"
+  data: "default_animation: \"shadow\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "size {\n"
   "  x: 100.0\n"
@@ -12,12 +12,4 @@ embedded_components {
   "  texture: \"/assets/atlas/go.atlas\"\n"
   "}\n"
   ""
-  position {
-    y: 25.0
-    z: 2.0
-  }
-  scale {
-    x: 0.5
-    y: 0.5
-  }
 }

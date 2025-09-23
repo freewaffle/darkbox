@@ -1,7 +1,15 @@
 name: "game"
+instances {
+  id: "shadow"
+  prototype: "/assets/go/cshadow.go"
+  position {
+    z: 0.9
+  }
+}
 scale_along_z: 0
 embedded_instances {
   id: "player"
+  children: "shadow"
   data: "components {\n"
   "  id: \"script\"\n"
   "  component: \"/game/scripts/player.script\"\n"
@@ -20,6 +28,9 @@ embedded_instances {
   "  texture: \\\"/assets/atlas/go.atlas\\\"\\n"
   "}\\n"
   "\"\n"
+  "  position {\n"
+  "    z: 1.0\n"
+  "  }\n"
   "  scale {\n"
   "    x: 0.2\n"
   "    y: 0.2\n"
@@ -57,9 +68,6 @@ embedded_instances {
   "\"\n"
   "}\n"
   ""
-  position {
-    z: 5.0
-  }
 }
 embedded_instances {
   id: "map"
@@ -159,6 +167,12 @@ embedded_instances {
   "  id: \"payphone\"\n"
   "  type: \"collectionfactory\"\n"
   "  data: \"prototype: \\\"/assets/collections/payphone.collection\\\"\\n"
+  "\"\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"target_ptr\"\n"
+  "  type: \"collectionfactory\"\n"
+  "  data: \"prototype: \\\"/assets/collections/target_pointer.collection\\\"\\n"
   "\"\n"
   "}\n"
   ""
