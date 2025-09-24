@@ -40,7 +40,8 @@ local MSG = {
 	SOUND_DONE = hash("sound_done"),
 	SET_PAYPHONES = hash("set_payphones"),
 	ADD = hash("add"),
-	TOGGLE = hash("toggle")
+	TOGGLE = hash("toggle"),
+	UPDATE_LIST = hash("update_list")
 }
 
 ------------------------------------------------------------------------
@@ -109,6 +110,8 @@ end
 
 local speech_pop_timer = nil
 
+local target_ptrs = {}
+
 ------------------------------------------------------------------------
 
 local function m_make(fn_init, fn_update)
@@ -175,6 +178,38 @@ local function m_interrupt_speech(speech)
 	m_add_speech(speech)
 end
 
+local function m_add_object(otype, props)
+	local allowed = {
+		"payphone",
+		"target_ptr"
+	}
+
+	local valid = false
+
+	if type(otype) == "string" then
+		for n, str in ipairs(allowed) do
+			if otype == str then
+				-- верный тип, продолжаем
+				valid = true
+				break
+			end
+		end
+	end
+
+	if valid then
+		msg.post(URL.MAP_CTL, MSG.ADD, {
+			type = otype,
+			position = assert(props.position, "expected field `position`")
+		})
+	else
+		if otype(otype) == "string" then
+			error(string.format("invalid object type '%s'", otype), 2)
+		else
+			error(string.format("invalid object type, expected string"), 2)
+		end
+	end
+end
+
 local function m_get_player_tile()
 	local pos = go.get_position(URL.PLAYER.THIS)
 	local x, y = 1 + math.floor(pos.x / 127), 1 + math.floor(pos.y / 127)
@@ -235,16 +270,11 @@ local scripts = {
 			m_add_speech({
 				locale[1]
 			})
-			msg.post(URL.MAP_CTL, MSG.ADD, {
-				type = "target_ptr",
-				position = vmath.vector3(64, 64, 1)
-			})
 		end
 	},
 	
 	[1] = {
 		init = function (env)
-			-- title
 			m_interrupt_speech({
 				locale[2]
 			})
@@ -272,7 +302,6 @@ local function try(fn, arg)
 	if type(fn) == "function" then
 		local handler = function (msg)
 			print(string.format("ERROR:%d: %s", progress, msg))
-
 			msg.post("@system:", "exit", {code = 1})
 		end
 
@@ -304,7 +333,20 @@ end
 
 ------------------------------------------------------------------------
 
-local function frame_handler()
+function init(self)
+	if ms_start then
+		try(ms_start.fn_init)
+		collectgarbage()
+	end
+
+	m_add_object("target_ptr", {
+		position = vmath.vector3(64, 64, 1)
+	})
+
+	--timer.delay(0.1, true, frame_handler)
+end
+
+function update(self, dt)
 	if fn_update then
 		try(fn_update, m_env)
 	end
@@ -316,21 +358,6 @@ local function frame_handler()
 	finished = false
 
 	collectgarbage()
-end
-
-collectgarbage()
-
-function init(self)
-	if ms_start then
-		try(ms_start.fn_init)
-		collectgarbage()
-	end
-
-	--timer.delay(0.1, true, frame_handler)
-end
-
-function update(self, dt)
-	frame_handler()
 end
 
 function on_message(self, message_id, message, sender)
@@ -358,5 +385,12 @@ function on_message(self, message_id, message, sender)
 		if type(message) == "table" then
 			payphones = message
 		end
+	elseif message_id == MSG.UPDATE_LIST then
+		if message.type == "payphone" then
+			payphones = message.list
+		elseif message.type == "target_ptr" then
+			target_ptrs = message.list
+		end
 	end
+	collectgarbage()
 end

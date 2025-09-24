@@ -26,13 +26,15 @@ local ID = {
 }
 
 local URL = {
-	MCTL = msg.url("game:/player#mission")
+	MCTL = msg.url("game:/player#mission"),
+	PLAYER = msg.url("game:/player")
 }
 
 local MSG = {
 	LOAD_MAP = hash("load_map"),
 	ADD = hash("add"),
 	TOGGLE = hash("toggle"),
+	UPDATE_LIST = hash("update_list")
 }
 
 local FACTORY = {
@@ -43,11 +45,14 @@ local FACTORY = {
 local PAYPHONES = {}
 local TARGET_PTRS = {}
 
-local function add_object(obj)
+local function add_object(obj, notify)
 	local TYPE = obj.type
+	local AFFECTED;
+	
 	if TYPE == "payphone" then
 		local instance = collectionfactory.create(FACTORY.PAYPHONE, obj.position)
 		PAYPHONES[#PAYPHONES+1] = instance
+		AFFECTED = PAYPHONES
 
 		go.animate(instance[ID.ARROW], ID.POSITION.Y, go.PLAYBACK_LOOP_PINGPONG, -60, go.EASING_INOUTSINE, 2)
 	elseif TYPE == "target_ptr" then
@@ -56,6 +61,15 @@ local function add_object(obj)
 	else
 		error("unknown type: " .. TYPE, 2)
 	end
+
+	if notify then
+		msg.post(URL.MCTL, MSG.UPDATE_LIST, {
+			type = TYPE,
+			list = AFFECTED
+		})
+	end
+
+	collectgarbage()
 end
 
 local function toggle_object(data)
@@ -86,6 +100,11 @@ local function load_map(name)
 	-- 1. загрузка и установка объектов
 	do
 		local objects = {}
+
+		local err = function (errmsg)
+			print("FATAL: " .. errmsg)
+			msg.post("@system:", "exit", {code = 1})
+		end
 		
 		local payphone = function (tx, ty)
 			return {
@@ -108,16 +127,7 @@ local function load_map(name)
 
 		for key, list in pairs(objects) do
 			for id, obj in ipairs(list) do
-				local err = function (errmsg)
-					print("FATAL: " .. errmsg)
-					msg.post("@system:", "exit", {code = 1})
-				end
-				
-				xpcall(function() add_object(obj) end, err)
-
-				-- if obj.starts_mission == true then
-				-- 	mphones[#mphones+1] = id
-				-- end
+				xpcall(function() add_object(obj, false) end, err)
 			end
 		end
 	end collectgarbage()
@@ -140,16 +150,31 @@ local function load_map(name)
 		msg.post(URL.MCTL, "set_payphones", p_ids)
 	end collectgarbage()
 
-	print("finished!")
+	print("finished loading map")
 end
 
 function init(self)
 	load_map("metacity")
 end
 
+function update(self, dt)
+	do
+		local player_pos = go.get_position(URL.PLAYER)
+		
+		for n, ptr in ipairs(TARGET_PTRS) do
+			local arrow = ptr[ID.ARROW]
+			local arrow_pos = go.get_position(arrow)
+			local angle = vmath.quat_rotation_z(math.atan2(-player_pos.x + arrow_pos.x, player_pos.y - arrow_pos.y))
+			go.set_rotation(angle, arrow)
+		end
+	end
+
+	collectgarbage()
+end
+
 function on_message(self, message_id, message)
 	if message_id == MSG.ADD then
-		add_object(message)
+		add_object(message, true)
 	elseif message_id == MSG.TOGGLE then
 		toggle_object(message)
 	elseif message_id == MSG.LOAD_MAP then
