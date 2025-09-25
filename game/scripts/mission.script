@@ -163,7 +163,7 @@ end
 
 local function m_remove_speech(n)
 	if n then
-		speech_stack[n] = nil
+		table.remove(speech_stack, n)
 	else
 		speech_stack = {}
 	end
