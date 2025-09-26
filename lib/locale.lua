@@ -17,8 +17,6 @@ Darkbox распространяется в надежде, что она буд
 <https://www.gnu.org/licenses/>.
 ]]
 
-----------------------------------------------------------------------
-
 local function init()
 	print("locale service started")
 	
