@@ -394,9 +394,9 @@ function init(self)
 		try(ms_start.fn_init)
 	end
 
-	m_add_object("target_ptr", {
-		position = vmath.vector3(64, 64, 1)
-	})
+	-- m_add_object("target_ptr", {
+	-- 	position = vmath.vector3(64, 64, 1)
+	-- })
 
 	collectgarbage()
 end

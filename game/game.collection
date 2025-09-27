@@ -6,6 +6,14 @@ instances {
     z: 0.9
   }
 }
+instances {
+  id: "car"
+  prototype: "/assets/go/car.go"
+  position {
+    x: 350.0
+    y: 350.0
+  }
+}
 scale_along_z: 0
 embedded_instances {
   id: "player"
@@ -71,6 +79,7 @@ embedded_instances {
 }
 embedded_instances {
   id: "map"
+  children: "car"
   children: "factory"
   data: "components {\n"
   "  id: \"tilemap\"\n"
@@ -79,6 +88,10 @@ embedded_instances {
   "components {\n"
   "  id: \"script\"\n"
   "  component: \"/game/scripts/map.script\"\n"
+  "}\n"
+  "components {\n"
+  "  id: \"ai\"\n"
+  "  component: \"/game/scripts/ai.script\"\n"
   "}\n"
   ""
 }

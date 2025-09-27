@@ -10,6 +10,10 @@ images {
 images {
   image: "/assets/images/arrow.png"
 }
+images {
+  image: "/assets/images/vehicle/cartest.png"
+  pivot_y: 0.2
+}
 animations {
   id: "player_moving"
   images {

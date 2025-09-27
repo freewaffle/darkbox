@@ -3,7 +3,7 @@ instances {
   id: "arrow"
   prototype: "/assets/go/arrow.go"
   position {
-    y: -70.0
+    y: -40.0
   }
 }
 instances {

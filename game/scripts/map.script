@@ -69,7 +69,10 @@ local function load_map(name)
 				local POS = obj.position
 				
 				if TYPE == "payphone" then
-					payphones[#payphones+1] = collectionfactory.create(FACTORY.PAYPHONE, POS)
+					local instance = collectionfactory.create(FACTORY.PAYPHONE, POS)
+					payphones[#payphones+1] = instance
+					
+					go.animate(instance[hash("/arrow")], "position.y", go.PLAYBACK_LOOP_PINGPONG, -20, go.EASING_INOUTSINE, 2)
 				elseif TYPE == "target_ptr" then
 					collectionfactory.create(FACTORY.TARGET_PTR, POS)
 				end

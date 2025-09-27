@@ -1,0 +1,16 @@
+local URL = {
+	CAR = msg.url("game:/car")
+}
+
+function init(self)
+	self.velocity = vmath.vector3(0, 16, 0)
+	go.set_position(vmath.vector3((128 * 8) - 65, (128 * 8) - 65, 1.5), URL.CAR)
+end
+
+function update(self, dt)
+	go.set_position(go.get_position(URL.CAR) + vmath.rotate(go.get_rotation(), (self.velocity * dt)), URL.CAR)
+	self.velocity.x = 0
+	--self.velocity.y = 0
+	
+	collectgarbage()
+end
