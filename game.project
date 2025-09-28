@@ -57,3 +57,6 @@ shared_state = 1
 [shader]
 exclude_gles_sm100 = 1
 
+[sound]
+gain = 0.0
+

@@ -25,7 +25,8 @@ local ID = {
 }
 
 local PROPS = {
-	MAX_ANGLE = 20 -- в градусах
+	MAX_ANGLE = 2, -- в градусах
+	MAX_SPEED = 250 -- в пикселях/сек
 }
 
 local TILESIZE = 128
@@ -40,34 +41,34 @@ local function get_tile_pos()
 	return tx, ty
 end
 
--- local function get_current_tile(layer)
--- 	local tx, ty = get_tile_pos()
--- 	local tile = tilemap.get_tile(ID.TILEMAP.THIS, layer, tx, ty)
--- 	return tile
--- end
+local function get_current_tile(layer)
+	local tx, ty = get_tile_pos()
+	local tile = tilemap.get_tile(ID.TILEMAP.THIS, layer, tx, ty)
+	return tile
+end
 
 --------------------------------------------------------------------------------
 
 function init(self)
-	self.time = 0
+	--self.time = 0
 
 	self.target_tile = {
 		x = 4,
 		y = 4
 	}
 
-	self.velocity = vmath.vector3(0, 16, 0)
+	self.velocity = vmath.vector3(0, PROPS.MAX_SPEED, 0)
 	go.set_position(vmath.vector3((128 * 8) - 65, (128 * 8) - 65, 1.5))
 end
 
 function update(self, dt)
-	self.time = self.time + dt
+	--self.time = self.time + dt
 
 	local rotation = vmath.quat_rotation_z(math.atan2((128 * self.target_tile.y) - 65, -(128 * self.target_tile.x) - 65))
 	local _, _, z1 = vmath.quat_to_euler(go.get_rotation())
 	local _, _, z2 = vmath.quat_to_euler(rotation)
 	local max = PROPS.MAX_ANGLE
-	local angle = math.min(max, math.max(z2, -max))
+	local angle = z1 + math.min(max, math.max((z2 - z1) * 0.1, -max))
 	
 	go.set_rotation(vmath.euler_to_quat(0, 0, angle))
 	go.set_position(go.get_position() + vmath.rotate(go.get_rotation(), (self.velocity * dt)))
