@@ -13,8 +13,6 @@ use_accelerometer = 0
 [display]
 width = 1920
 height = 1080
-high_dpi = 1
-dynamic_orientation = 1
 fullscreen = 1
 display_profiles = /data/dp.display_profilesc
 
@@ -30,9 +28,7 @@ input_method = HiddenInputField
 [physics]
 gravity_y = 0.0
 scale = 0.01
-allow_dynamic_transforms = 1
 world_count = 1
-debug = 0
 
 [html5]
 scale_mode = stretch

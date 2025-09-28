@@ -1,0 +1,78 @@
+--[[
+Этот файл — часть Darkbox.
+
+Darkbox — свободная программа: вы можете перераспространять ее и/или
+изменять ее на условиях Стандартной общественной лицензии GNU в том
+виде, в каком она была опубликована Фондом свободного программного
+обеспечения; либо версии 3 лицензии, либо (по вашему выбору) любой
+более поздней версии.
+
+Darkbox распространяется в надежде, что она будет полезной, но БЕЗО
+ВСЯКИХ ГАРАНТИЙ; даже без неявной гарантии ТОВАРНОГО ВИДА или
+ПРИГОДНОСТИ ДЛЯ ОПРЕДЕЛЕННЫХ ЦЕЛЕЙ. Подробнее см. в Стандартной
+общественной лицензии GNU.
+
+Вы должны были получить копию Стандартной общественной лицензии GNU
+вместе с этой программой. Если это не так, см.
+<https://www.gnu.org/licenses/>.
+]]
+
+local ID = {
+	TILEMAP = {
+		THIS = msg.url("game:/map#tilemap"),
+		GROUND = hash("ground")
+	}
+}
+
+local PROPS = {
+	MAX_ANGLE = 20 -- в градусах
+}
+
+local TILESIZE = 128
+
+local function get_tile_pos()
+	local tx, ty
+	do
+		local pos = go.get_position()
+		tx = math.floor(pos.x / TILESIZE) + 1
+		ty = math.floor(pos.y / TILESIZE) + 1
+	end
+	return tx, ty
+end
+
+-- local function get_current_tile(layer)
+-- 	local tx, ty = get_tile_pos()
+-- 	local tile = tilemap.get_tile(ID.TILEMAP.THIS, layer, tx, ty)
+-- 	return tile
+-- end
+
+--------------------------------------------------------------------------------
+
+function init(self)
+	self.time = 0
+
+	self.target_tile = {
+		x = 4,
+		y = 4
+	}
+
+	self.velocity = vmath.vector3(0, 16, 0)
+	go.set_position(vmath.vector3((128 * 8) - 65, (128 * 8) - 65, 1.5))
+end
+
+function update(self, dt)
+	self.time = self.time + dt
+
+	local rotation = vmath.quat_rotation_z(math.atan2((128 * self.target_tile.y) - 65, -(128 * self.target_tile.x) - 65))
+	local _, _, z1 = vmath.quat_to_euler(go.get_rotation())
+	local _, _, z2 = vmath.quat_to_euler(rotation)
+	local max = PROPS.MAX_ANGLE
+	local angle = math.min(max, math.max(z2, -max))
+	
+	go.set_rotation(vmath.euler_to_quat(0, 0, angle))
+	go.set_position(go.get_position() + vmath.rotate(go.get_rotation(), (self.velocity * dt)))
+	self.velocity.x = 0
+	--self.velocity.y = 0
+
+	collectgarbage()
+end
