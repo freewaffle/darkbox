@@ -53,8 +53,8 @@ function init(self)
 	--self.time = 0
 
 	self.target_tile = {
-		x = 4,
-		y = 4
+		x = 8,
+		y = 10
 	}
 
 	self.velocity = vmath.vector3(0, PROPS.MAX_SPEED, 0)
@@ -64,16 +64,39 @@ end
 function update(self, dt)
 	--self.time = self.time + dt
 
-	local rotation = vmath.quat_rotation_z(math.atan2((128 * self.target_tile.y) - 65, -(128 * self.target_tile.x) - 65))
-	local _, _, z1 = vmath.quat_to_euler(go.get_rotation())
-	local _, _, z2 = vmath.quat_to_euler(rotation)
-	local max = PROPS.MAX_ANGLE
-	local angle = z1 + math.min(max, math.max((z2 - z1) * 0.1, -max))
-	
-	go.set_rotation(vmath.euler_to_quat(0, 0, angle))
-	go.set_position(go.get_position() + vmath.rotate(go.get_rotation(), (self.velocity * dt)))
-	self.velocity.x = 0
-	--self.velocity.y = 0
+	if self.target_tile then
+		-- local rotation = vmath.quat_rotation_z(math.atan2((128 * self.target_tile.y), -(128 * self.target_tile.x)))
+		-- local _, _, z1 = vmath.quat_to_euler(go.get_rotation())
+		-- local _, _, z2 = vmath.quat_to_euler(rotation)
+		-- local max = PROPS.MAX_ANGLE
+		-- print((z2 - z1) * 1)
+		-- local inc = math.max(-max, math.min((z2 - z1) * 0.1, max))--math.min(max, math.max((z2 - z1) * 0.1, -max))
+		-- local angle = z1 + inc-- + PROPS.MAX_ANGLE * 0.6
+
+		-- local tx = (128 * self.target_tile.x)
+		-- local ty = (128 * self.target_tile.y)
+		-- local target_rotation = vmath.quat_rotation_z(math.atan2(ty,-tx))
+		-- local mid_txy = math.floor((tx + ty) / 2)
+		-- local _, _, z1 = vmath.quat_to_euler(go.get_rotation())
+		-- local _, _, z2 = vmath.quat_to_euler(target_rotation)
+		-- local mid_xy = math.floor((go.get(".", "position.x") + go.get(".", "position.y")) / 2)
+		-- local angle = z2 * (mid_txy - mid_xy)
+
+		local rotation = vmath.quat_rotation_z(math.atan2((128 * self.target_tile.y) - 64, -(128 * self.target_tile.x) - 64))
+		local _, _, z2 = vmath.quat_to_euler(rotation)
+		local angle = z2
+		
+		go.set_rotation(vmath.euler_to_quat(0, 0, angle))
+		go.set_position(go.get_position() + vmath.rotate(go.get_rotation(), (self.velocity * dt)))
+		--self.velocity.x = 0
+		--self.velocity.y = 0
+
+		local ctx, cty = get_tile_pos()
+		local target_x, target_y = self.target_tile.x, self.target_tile.y
+		if ctx == target_x and cty == target_y then
+			self.target_tile = nil
+		end
+	end
 
 	collectgarbage()
 end
