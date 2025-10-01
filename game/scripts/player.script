@@ -207,6 +207,7 @@ function init(self)
 end
 
 function update(self, dt)
+	local special_url = msg.url("game:/car")
 	local pos = go.get_position()
 	
 	if self.velocity.x ~= 0 or self.velocity.y ~= 0 then
@@ -233,7 +234,11 @@ function update(self, dt)
 		self.velocity = vmath.vector3()
 	end
 
-	move_camera(pos, 0.5, go.EASING_OUTCUBIC)
+	if special_url then
+		move_camera(go.get_position(special_url), 0.5, go.EASING_OUTCUBIC)
+	else
+		move_camera(pos, 0.5, go.EASING_OUTCUBIC)
+	end
 	
 	--pos = nil
 	collectgarbage()
