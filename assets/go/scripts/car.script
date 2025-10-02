@@ -48,14 +48,14 @@ function init(self)
 	self.time = 0
 
 	self.target_tile = {
-		x = 2,
-		y = 2
+		x = 8,
+		y = 8
 	}
 
 	self.props = {
 		max_angle = 2, -- в градусах
 		max_speed = 250, -- в пикселях/сек
-		fade_speed = false
+		fade_speed = true
 	}
 
 	self.velocity = 250
@@ -68,13 +68,13 @@ function update(self, dt)
 	if self.target_tile then
 		local current_position = go.get_position()
 		local target_position = vmath.vector3(TILESIZE * self.target_tile.x, TILESIZE * self.target_tile.y, 0)
-		--self.velocity = math.min(x, ...)
 
 		if self.props.fade_speed then
 			local mid_x = math.abs(target_position.x - current_position.x)
 			local mid_y = math.abs(target_position.y - current_position.y)
 			local mid_position = (mid_x + mid_y) / 2
-			self.velocity = math.min(mid_position, self.props.max_speed)
+			local strength = 1--0.5
+			self.velocity = math.min(mid_position * strength, self.props.max_speed)
 		end
 		
 		local target_angle = vmath.quat_rotation_z(math.atan2(current_position.x - target_position.x, target_position.y - current_position.y))
