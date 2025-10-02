@@ -50,10 +50,11 @@ function init(self)
 		rotation = 0,
 	}
 
-	self.target_tile = {
+	self.target_tile = nil
+	--[[ {
 		x = 4,
 		y = 32
-	}
+	} ]]--
 
 	self.props = {
 		max_angle = 2, -- в градусах
@@ -66,7 +67,7 @@ function init(self)
 	self.prev_velocity = 0
 
 	self.velocity = 250
-	--go.set_position(vmath.vector3((128 * 8) - 65, (128 * 8) - 65, 1.5))
+	go.set_position(vmath.vector3((128 * 8) - 65, (128 * 8) - 65, 1.5))
 end
 
 function update(self, dt)
