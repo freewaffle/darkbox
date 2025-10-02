@@ -1,116 +1,116 @@
 platforms:
   armv7-ios:
     context:
-      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image]
+      excludeLibs: [gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image, physics, LinearMath, BulletDynamics, BulletCollision]
       excludeSymbols: [ScriptModelExt, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt]
       symbols: []
-      libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null]
+      libs: [gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null, physics_2d_defold]
       frameworks: []
       linkFlags: []
   arm64-ios:
     context:
-      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image, graphics]
+      excludeLibs: [gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image, graphics, physics, LinearMath, BulletDynamics, BulletCollision]
       excludeSymbols: [ScriptModelExt, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt, GraphicsAdapterOpenGL]
       symbols: [GraphicsAdapterVulkan]
-      libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null, graphics_vulkan, MoltenVK]
+      libs: [gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null, graphics_vulkan, MoltenVK, physics_2d_defold]
       frameworks: [Metal, IOSurface, QuartzCore]
       linkFlags: []
   x86_64-ios:
     context:
-      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image]
+      excludeLibs: [gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image, physics, LinearMath, BulletDynamics, BulletCollision]
       excludeSymbols: [ScriptModelExt, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt]
       symbols: []
-      libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null]
+      libs: [gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null, physics_2d_defold]
       frameworks: []
       linkFlags: []
   armv7-android:
     context:
-      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image, graphics]
+      excludeLibs: [gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image, graphics, physics, LinearMath, BulletDynamics, BulletCollision]
       excludeJars: []
       excludeSymbols: [ScriptModelExt, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt, GraphicsAdapterOpenGL]
       symbols: [GraphicsAdapterVulkan]
-      libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null, graphics_vulkan]
+      libs: [gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null, graphics_vulkan, physics_2d_defold]
       linkFlags: []
       jetifier: true
   arm64-android:
     context:
-      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image, graphics]
+      excludeLibs: [gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image, graphics, physics, LinearMath, BulletDynamics, BulletCollision]
       excludeJars: []
       excludeSymbols: [ScriptModelExt, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt, GraphicsAdapterOpenGL]
       symbols: [GraphicsAdapterVulkan]
-      libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null, graphics_vulkan]
+      libs: [gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null, graphics_vulkan, physics_2d_defold]
       linkFlags: []
       jetifier: true
   arm64-osx:
     context:
-      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image]
+      excludeLibs: [gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image, physics, LinearMath, BulletDynamics, BulletCollision]
       excludeSymbols: [ScriptModelExt, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt]
       symbols: []
-      libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null]
+      libs: [gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null, physics_2d_defold]
       frameworks: []
       linkFlags: []
   x86_64-osx:
     context:
-      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image]
+      excludeLibs: [gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image, physics, LinearMath, BulletDynamics, BulletCollision]
       excludeSymbols: [ScriptModelExt, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt]
       symbols: []
-      libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null]
+      libs: [gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null, physics_2d_defold]
       frameworks: []
       linkFlags: []
   x86_64-linux:
     context:
-      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image, graphics]
+      excludeLibs: [gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image, graphics, physics, LinearMath, BulletDynamics, BulletCollision]
       excludeSymbols: [ScriptModelExt, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt, GraphicsAdapterOpenGL]
       symbols: [GraphicsAdapterVulkan]
-      libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null, platform_vulkan, graphics_vulkan, X11-xcb]
+      libs: [gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null, platform_vulkan, graphics_vulkan, X11-xcb, physics_2d_defold]
       dynamicLibs: [vulkan]
       linkFlags: []
   arm64-linux:
     context:
-      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image, graphics]
+      excludeLibs: [gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image, graphics, physics, LinearMath, BulletDynamics, BulletCollision]
       excludeSymbols: [ScriptModelExt, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt, GraphicsAdapterOpenGLES]
       symbols: [GraphicsAdapterVulkan]
-      libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null, platform_vulkan, graphics_vulkan, X11-xcb]
+      libs: [gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null, platform_vulkan, graphics_vulkan, X11-xcb, physics_2d_defold]
       dynamicLibs: [vulkan]
       linkFlags: []
   x86-win32:
     context:
-      excludeLibs: [libphysics, libLinearMath, libBulletDynamics, libBulletCollision, libbox2d_defold, libscript_box2d_defold, libgamesys_model, libgamesys_rig, librig, librecord, vpx, libdecoder_wav, libliveupdate, libimage, libplatform, libgraphics]
+      excludeLibs: [libgamesys_model, libgamesys_rig, librig, librecord, vpx, libdecoder_wav, libliveupdate, libimage, libplatform, libgraphics, libphysics, libLinearMath, libBulletDynamics, libBulletCollision]
       excludeSymbols: [ScriptModelExt, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt, GraphicsAdapterOpenGL]
       symbols: [GraphicsAdapterVulkan]
-      libs: [libphysics_2d.lib, libbox2d.lib, libscript_box2d.lib, libgamesys_rig_null.lib, libgamesys_model_null.lib, librig_null.lib, librecord_null.lib, libliveupdate_null.lib, libimage_null.lib, libplatform_vulkan.lib, libgraphics_vulkan.lib, vulkan-1.lib]
+      libs: [libgamesys_rig_null.lib, libgamesys_model_null.lib, librig_null.lib, librecord_null.lib, libliveupdate_null.lib, libimage_null.lib, libplatform_vulkan.lib, libgraphics_vulkan.lib, vulkan-1.lib, libphysics_2d_defold.lib]
       linkFlags: []
   x86_64-win32:
     context:
-      excludeLibs: [libphysics, libLinearMath, libBulletDynamics, libBulletCollision, libbox2d_defold, libscript_box2d_defold, libgamesys_model, libgamesys_rig, librig, librecord, vpx, libdecoder_wav, libliveupdate, libimage, libplatform, libgraphics]
+      excludeLibs: [libgamesys_model, libgamesys_rig, librig, librecord, vpx, libdecoder_wav, libliveupdate, libimage, libplatform, libgraphics, libphysics, libLinearMath, libBulletDynamics, libBulletCollision]
       excludeSymbols: [ScriptModelExt, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt, GraphicsAdapterOpenGL]
       symbols: [GraphicsAdapterVulkan]
-      libs: [libphysics_2d.lib, libbox2d.lib, libscript_box2d.lib, libgamesys_rig_null.lib, libgamesys_model_null.lib, librig_null.lib, librecord_null.lib, libliveupdate_null.lib, libimage_null.lib, libplatform_vulkan.lib, libgraphics_vulkan.lib, vulkan-1.lib]
+      libs: [libgamesys_rig_null.lib, libgamesys_model_null.lib, librig_null.lib, librecord_null.lib, libliveupdate_null.lib, libimage_null.lib, libplatform_vulkan.lib, libgraphics_vulkan.lib, vulkan-1.lib, libphysics_2d_defold.lib]
       linkFlags: []
   js-web:
     context:
-      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image, graphics]
+      excludeLibs: [gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image, graphics, physics, LinearMath, BulletDynamics, BulletCollision]
       excludeJsLibs: []
       excludeSymbols: [ScriptModelExt, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt, GraphicsAdapterOpenGL]
       symbols: [GraphicsAdapterWebGPU]
-      libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null, graphics_webgpu]
+      libs: [gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null, graphics_webgpu, physics_2d_defold]
       linkFlags: []
       emscriptenLinkFlags: [USE_WEBGPU=1, GL_WORKAROUND_SAFARI_GETCONTEXT_BUG=0]
   wasm-web:
     context:
-      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image, graphics]
+      excludeLibs: [gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image, graphics, physics, LinearMath, BulletDynamics, BulletCollision]
       excludeJsLibs: []
       excludeSymbols: [ScriptModelExt, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt, GraphicsAdapterOpenGL]
       symbols: [GraphicsAdapterWebGPU]
-      libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null, graphics_webgpu]
+      libs: [gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null, graphics_webgpu, physics_2d_defold]
       linkFlags: []
       emscriptenLinkFlags: [USE_WEBGPU=1, GL_WORKAROUND_SAFARI_GETCONTEXT_BUG=0, ASYNCIFY=1, ASYNCIFY_IGNORE_INDIRECT=1, 'ASYNCIFY_ADD=["main","dmEngineCreate(*)","requestDeviceCallback(*)","WebGPUCreateSwapchain(*)","instanceRequestAdapterCallback(*)"]']
   wasm_pthread-web:
     context:
-      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image, graphics]
+      excludeLibs: [gamesys_model, gamesys_rig, rig, record, vpx, decoder_wav, liveupdate, image, graphics, physics, LinearMath, BulletDynamics, BulletCollision]
       excludeJsLibs: []
       excludeSymbols: [ScriptModelExt, AudioDecoderWav, ResourceTypeWav, ScriptImageExt, ScriptTypesExt, GraphicsAdapterOpenGL]
       symbols: [GraphicsAdapterWebGPU]
-      libs: [physics_2d, box2d, script_box2d, gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null, graphics_webgpu]
+      libs: [gamesys_rig_null, gamesys_model_null, rig_null, record_null, liveupdate_null, image_null, graphics_webgpu, physics_2d_defold]
       linkFlags: []
       emscriptenLinkFlags: [USE_WEBGPU=1, GL_WORKAROUND_SAFARI_GETCONTEXT_BUG=0, ASYNCIFY=1, ASYNCIFY_IGNORE_INDIRECT=1, 'ASYNCIFY_ADD=["main","dmEngineCreate(*)","requestDeviceCallback(*)","WebGPUCreateSwapchain(*)","instanceRequestAdapterCallback(*)"]']
