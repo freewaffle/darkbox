@@ -45,25 +45,34 @@ end
 --------------------------------------------------------------------------------
 
 function init(self)
-	self.time = 0
+	self.time = {
+		acceleration = 0,
+		rotation = 0,
+	}
 
 	self.target_tile = {
-		x = 8,
-		y = 8
+		x = 4,
+		y = 32
 	}
 
 	self.props = {
 		max_angle = 2, -- в градусах
 		max_speed = 250, -- в пикселях/сек
-		fade_speed = true
+		acceleration_time = 2, -- в секундах
+		rotation_time = 1, -- в секундах
+		fade_speed = false
 	}
+
+	self.prev_velocity = 0
 
 	self.velocity = 250
 	--go.set_position(vmath.vector3((128 * 8) - 65, (128 * 8) - 65, 1.5))
 end
 
 function update(self, dt)
-	self.time = self.time + dt
+	for timer, value in pairs(self.time) do
+		self.time[timer] = value + dt
+	end
 
 	if self.target_tile then
 		local current_position = go.get_position()
@@ -73,24 +82,31 @@ function update(self, dt)
 			local mid_x = math.abs(target_position.x - current_position.x)
 			local mid_y = math.abs(target_position.y - current_position.y)
 			local mid_position = (mid_x + mid_y) / 2
-			local strength = 1--0.5
+			local strength = 0.5
 			self.velocity = math.min(mid_position * strength, self.props.max_speed)
 		end
 		
 		local target_angle = vmath.quat_rotation_z(math.atan2(current_position.x - target_position.x, target_position.y - current_position.y))
 		local current_angle = go.get_rotation()
-		local smoothness = 0.4-- * ((self.velocity / self.props.max_speed))
-		current_angle = vmath.lerp(smoothness * self.time, current_angle, target_angle)
+		local smoothness = 0.3
+		local rotation_time = math.min(self.time.rotation / self.props.rotation_time, 1)
+		current_angle = vmath.lerp(smoothness * rotation_time, current_angle, target_angle)
 		
 		go.set_rotation(current_angle)
-		go.set_position(current_position + vmath.rotate(go.get_rotation(), (vmath.vector3(0, self.velocity, 0) * dt)))
 
 		local tile_x, tile_y = get_tile_pos()
 		local target_x, target_y = self.target_tile.x, self.target_tile.y
 		if tile_x == target_x and tile_y == target_y then
+			self.time.acceleration = 0
+			self.prev_velocity = self.velocity
 			self.target_tile = nil
 		end
+	else
+		local time = math.min(self.time.acceleration / self.props.acceleration_time, 1)
+		self.velocity = vmath.lerp(time, self.prev_velocity, 0)
 	end
+
+	go.set_position(go.get_position() + vmath.rotate(go.get_rotation(), (vmath.vector3(0, self.velocity, 0) * dt)))
 
 	collectgarbage()
 end
