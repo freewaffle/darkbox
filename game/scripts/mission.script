@@ -151,7 +151,6 @@ local function pop_speech()
 			text = speech
 		})
 		if not had_speech_before then
-			-- sound.play(ID.SOUND.SPEECH)
 			local times = 12 -- math.ceil(#speech * 0.05)
 			play_speech(times)
 			had_speech_before = true
@@ -251,7 +250,6 @@ local function m_add_object(otype, props)
 			position = assert(props.position, "expected field `position`")
 		}
 		
-		--msg.post(URL.MAP_CTL, MSG.ADD, props)
 		add_object(obj)
 	else
 		if otype(otype) == "string" then
@@ -293,13 +291,11 @@ local function m_toggle_payphones(switches)
 		for n, id in ipairs(PAYPHONES) do
 			local data = { "payphone", n, switches }
 			toggle_object(data)
-			--msg.post(URL.MAP_CTL, MSG.TOGGLE, { "payphone", n, switches })
 		end
 	elseif type(switches) == "table" then
 		for n, switch in ipairs(switches) do
 			local data = { "payphone", switch[1], switch[2] }
 			toggle_object(data)
-			--msg.post(URL.MAP_CTL, MSG.TOGGLE, { "payphone", switch[1], switch[2] })
 		end
 	end
 end
