@@ -24,12 +24,6 @@ local ACTION = {
 	MOVE_RIGHT = hash("move_right")
 }
 
---[[ цитата из @dark6ox:
-я заметил, что функции, которые изменяют свойства объектов, вместе с обычными строками принимают также хэши.
-предполагаю, что во время выполнения обычные строки хэшируются и передаются движку (согласно документации,
-движок использует хэш в качестве ссылок), поэтому все найденные ссылки я вынес в отдельную таблицу.
-там они хэшируются при загрузке, а не во время выполнения, так что это плюс к оптимизации! ]]
-
 local MSG = {
 	UPDATE_HP = hash("update_hp"),
 	ENABLE = hash("enable"),
@@ -40,7 +34,6 @@ local MSG = {
 	ACTIVATE_MISSION = hash("activate_mission"),
 }
 
--- идентификаторы игровых объектов.
 local ID = {
 	-- player:
 
@@ -155,7 +148,6 @@ local function tile_trigger(pos)
 			set_hp(0)
 		end
 	else
-		--print("death reason: pos < 0")
 		set_hp(0)
 	end
 end
@@ -240,7 +232,6 @@ function update(self, dt)
 		move_camera(pos, 0.5, go.EASING_OUTCUBIC)
 	end
 	
-	--pos = nil
 	collectgarbage()
 
 	--hp_trigger()
@@ -255,7 +246,6 @@ function on_message(self, message_id, message, sender)
 end
 
 function on_input(self, action_id, action)
-	-- удалить, если есть процессы, не требующие живого игрока:
 	if dead then return end
 
 	local moved = false
