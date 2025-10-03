@@ -14151,7 +14151,7 @@ layers {
   }
 }
 layers {
-  id: "ped"
+  id: "peds"
   z: 0.1
   is_visible: 0
   cell {
