@@ -199,7 +199,7 @@ function init(self)
 end
 
 function update(self, dt)
-	local special_url = nil --msg.url("game:/car")
+	local special_url = msg.url("game:/car")
 	local pos = go.get_position()
 	
 	if self.velocity.x ~= 0 or self.velocity.y ~= 0 then
