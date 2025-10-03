@@ -29,7 +29,10 @@ local TILESIZE = 128
 
 local TILE = {
 	WATER = 3,
-	CTL_UP = 9
+	CTL_CONTINUE = 7,
+	CTL_STOP = 8,
+	CTL_UP = 9,
+	CTL_ROTATE_TOP_LEFT = 13,
 }
 
 local function get_tile_pos()
@@ -59,6 +62,11 @@ function init(self)
 	self.target_tile = {
 		x = 8,
 		y = 9
+	}
+
+	self.direction = {
+		x = 0,
+		y = 0,
 	}
 
 	self.props = {
@@ -109,6 +117,23 @@ function update(self, dt)
 
 				if tile == TILE.CTL_UP then
 					self.target_tile.y = self.target_tile.y + 1
+					self.direction = {
+						x = 0,
+						y = 1
+					}
+				elseif tile == TILE.CTL_CONTINUE then
+					---------------------- X ----------------------
+					if self.direction.x >= 1 then
+						self.target_tile.x = self.target_tile.x + 1
+					elseif self.direction.x <= -1 then
+						self.target_tile.x = self.target_tile.x - 1
+					---------------------- Y ----------------------
+					elseif self.direction.y >= 1 then
+						self.target_tile.y = self.target_tile.y + 1
+					elseif self.direction.y <= -1 then
+						self.target_tile.y = self.target_tile.y - 1
+					end
+					-----------------------------------------------
 				else
 					print("PANIC: not a control tile we're at!")
 					self.target_tile = nil
