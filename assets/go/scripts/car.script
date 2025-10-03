@@ -79,6 +79,7 @@ function init(self)
 		max_speed = 250, -- в пикселях/сек
 		acceleration_time = 2, -- в секундах
 		rotation_time = 1, -- в секундах
+		brake_time = 0.5, -- в секундах
 		fade_speed = false,
 		traffic_mode = true
 	}
@@ -165,6 +166,8 @@ function update(self, dt)
 						x = -1,
 						y = 1
 					}
+				elseif tile == TILE.CTL_STOP then
+					stop()
 				else
 					print("PANIC: not a control tile we're at!")
 					self.target_tile = nil
@@ -176,7 +179,7 @@ function update(self, dt)
 			end
 		end
 	else
-		local time = math.min(self.time.acceleration / self.props.acceleration_time, 1)
+		local time = math.min(self.time.acceleration / self.props.brake_time, 1)
 		self.velocity = vmath.lerp(time, self.prev_velocity, 0)
 	end
 
