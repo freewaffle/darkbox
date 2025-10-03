@@ -29,10 +29,15 @@ local TILESIZE = 128
 
 local TILE = {
 	WATER = 3,
+	
 	CTL_CONTINUE = 7,
 	CTL_STOP = 8,
 	CTL_UP = 9,
+	CTL_RIGHT = 10,
 	CTL_ROTATE_TOP_LEFT = 13,
+	CTL_ROTATE_TOP_RIGHT = 14,
+	CTL_ROTATE_DOWN_LEFT = 15,
+	CTL_ROTATE_DOWN_RIGHT = 16,
 }
 
 local function get_tile_pos()
@@ -89,6 +94,12 @@ function update(self, dt)
 		self.time[timer] = value + dt
 	end
 
+	local stop = function ()
+		self.time.acceleration = 0
+		self.prev_velocity = self.velocity
+		self.target_tile = nil
+	end
+
 	if self.target_tile then
 		local current_position = go.get_position()
 		local target_position = vmath.vector3(TILESIZE * self.target_tile.x - 65, TILESIZE * self.target_tile.y - 65, 0)
@@ -121,6 +132,12 @@ function update(self, dt)
 						x = 0,
 						y = 1
 					}
+				elseif tile == TILE.CTL_RIGHT then
+					self.target_tile.x = self.target_tile.x + 1
+					self.direction = {
+						x = 1,
+						y = 0
+					}
 				elseif tile == TILE.CTL_CONTINUE then
 					---------------------- X ----------------------
 					if self.direction.x >= 1 then
@@ -134,6 +151,20 @@ function update(self, dt)
 						self.target_tile.y = self.target_tile.y - 1
 					end
 					-----------------------------------------------
+				elseif tile == TILE.CTL_ROTATE_TOP_LEFT then
+					self.target_tile.x = self.target_tile.x + 1
+					self.target_tile.y = self.target_tile.y + 1
+					self.direction = {
+						x = 1,
+						y = 1
+					}
+				elseif tile == TILE.CTL_ROTATE_TOP_RIGHT then
+					self.target_tile.x = self.target_tile.x - 1
+					self.target_tile.y = self.target_tile.y + 1
+					self.direction = {
+						x = -1,
+						y = 1
+					}
 				else
 					print("PANIC: not a control tile we're at!")
 					self.target_tile = nil
@@ -141,9 +172,7 @@ function update(self, dt)
 
 				self.time.rotation = 0
 			else
-				self.time.acceleration = 0
-				self.prev_velocity = self.velocity
-				self.target_tile = nil
+				stop()
 			end
 		end
 	else
