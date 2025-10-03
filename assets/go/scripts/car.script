@@ -20,11 +20,17 @@ Darkbox распространяется в надежде, что она буд
 local ID = {
 	TILEMAP = {
 		THIS = msg.url("game:/map#tilemap"),
-		GROUND = hash("ground")
+		GROUND = hash("ground"),
+		TRAFFIC = hash("traffic"),
 	}
 }
 
 local TILESIZE = 128
+
+local TILE = {
+	WATER = 3,
+	CTL_UP = 9
+}
 
 local function get_tile_pos()
 	local tx, ty
@@ -50,18 +56,18 @@ function init(self)
 		rotation = 0,
 	}
 
-	self.target_tile = nil
-	--[[ {
-		x = 4,
-		y = 32
-	} ]]--
+	self.target_tile = {
+		x = 8,
+		y = 9
+	}
 
 	self.props = {
 		max_angle = 2, -- в градусах
 		max_speed = 250, -- в пикселях/сек
 		acceleration_time = 2, -- в секундах
 		rotation_time = 1, -- в секундах
-		fade_speed = false
+		fade_speed = false,
+		traffic_mode = true
 	}
 
 	self.prev_velocity = 0
@@ -77,7 +83,7 @@ function update(self, dt)
 
 	if self.target_tile then
 		local current_position = go.get_position()
-		local target_position = vmath.vector3(TILESIZE * self.target_tile.x, TILESIZE * self.target_tile.y, 0)
+		local target_position = vmath.vector3(TILESIZE * self.target_tile.x - 65, TILESIZE * self.target_tile.y - 65, 0)
 
 		if self.props.fade_speed then
 			local mid_x = math.abs(target_position.x - current_position.x)
@@ -98,9 +104,22 @@ function update(self, dt)
 		local tile_x, tile_y = get_tile_pos()
 		local target_x, target_y = self.target_tile.x, self.target_tile.y
 		if tile_x == target_x and tile_y == target_y then
-			self.time.acceleration = 0
-			self.prev_velocity = self.velocity
-			self.target_tile = nil
+			if self.props.traffic_mode then
+				local tile = get_current_tile(ID.TILEMAP.TRAFFIC)
+
+				if tile == TILE.CTL_UP then
+					self.target_tile.y = self.target_tile.y + 1
+				else
+					print("PANIC: not a control tile we're at!")
+					self.target_tile = nil
+				end
+
+				self.time.rotation = 0
+			else
+				self.time.acceleration = 0
+				self.prev_velocity = self.velocity
+				self.target_tile = nil
+			end
 		end
 	else
 		local time = math.min(self.time.acceleration / self.props.acceleration_time, 1)
