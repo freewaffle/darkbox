@@ -11,9 +11,9 @@ game_binding = /input/default.input_bindingc
 use_accelerometer = 0
 
 [display]
-width = 1920
-height = 1080
-fullscreen = 1
+width = 1440
+height = 810
+fullscreen = 0
 display_profiles = /data/dp.display_profilesc
 
 [windows]
