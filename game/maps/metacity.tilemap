@@ -14158,8 +14158,12 @@ layers {
   }
 }
 layers {
-  id: "peds"
+  id: "lightning"
   z: 0.1
+}
+layers {
+  id: "peds"
+  z: 1.0
   is_visible: 0
   cell {
     x: 0
@@ -18174,7 +18178,7 @@ layers {
 }
 layers {
   id: "traffic"
-  z: 0.2
+  z: 1.0
   is_visible: 0
   cell {
     x: 4
