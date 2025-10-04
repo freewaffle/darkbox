@@ -14,7 +14,7 @@ use_accelerometer = 0
 width = 1440
 height = 810
 fullscreen = 0
-display_profiles = /data/dp.display_profilesc
+display_profiles = /assets/display_profiles.display_profilesc
 
 [windows]
 app_icon = /assets/app_icons/appicon.ico

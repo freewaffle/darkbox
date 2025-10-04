@@ -135,6 +135,50 @@ nodes {
   inherit_alpha: true
 }
 material: "/builtins/materials/gui.material"
+layouts {
+  name: "810p"
+  nodes {
+    size {
+      x: 1440.0
+      y: 810.0
+    }
+    type: TYPE_BOX
+    id: "vignette/box"
+    parent: "vignette"
+    overridden_fields: 4
+    template_node_child: true
+  }
+  nodes {
+    position {
+      x: 1380.0
+      y: 50.0
+    }
+    type: TYPE_BOX
+    id: "hp_box"
+    parent: "root"
+    overridden_fields: 1
+  }
+  nodes {
+    size {
+      x: 1110.0
+      y: 80.0
+    }
+    type: TYPE_BOX
+    id: "speech_bg"
+    parent: "speech"
+    overridden_fields: 4
+  }
+  nodes {
+    size {
+      x: 1090.0
+      y: 60.0
+    }
+    type: TYPE_TEXT
+    id: "speech_text"
+    parent: "speech"
+    overridden_fields: 4
+  }
+}
 adjust_reference: ADJUST_REFERENCE_PARENT
 max_nodes: 16
 max_dynamic_textures: 0

@@ -1,14 +1,28 @@
 profiles {
-  name: "16:9"
+  name: "576p"
+  qualifiers {
+    width: 768
+    height: 576
+  }
+}
+profiles {
+  name: "720p"
   qualifiers {
     width: 1280
     height: 720
   }
 }
 profiles {
-  name: "4:3"
+  name: "810p"
   qualifiers {
-    width: 768
-    height: 576
+    width: 1440
+    height: 810
+  }
+}
+profiles {
+  name: "1080p"
+  qualifiers {
+    width: 1920
+    height: 1080
   }
 }
