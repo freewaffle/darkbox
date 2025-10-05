@@ -14,7 +14,6 @@ use_accelerometer = 0
 [display]
 width = 1440
 height = 810
-fullscreen = 0
 display_profiles = /assets/display_profiles.display_profilesc
 
 [windows]
@@ -36,12 +35,6 @@ scale_mode = stretch
 
 [graphics]
 opengl_version_hint = 46
-default_texture_min_filter = linear
-default_texture_mag_filter = linear
-
-[profiler]
-enabled = 0
-sleep_between_server_updates = 0
 
 [liveupdate]
 mount_on_start = 0
