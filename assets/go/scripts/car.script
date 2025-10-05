@@ -42,20 +42,6 @@ local TILE = {
 	CTL_ROTATE_DOWN_RIGHT = 16,
 }
 
--- типы плиток, при которых нужно замедлиться (фильтр `SPEED_FADE_FILTER.TURN`)
-local TURN_TILES = {
-	TILE.CTL_ROTATE_TOP_LEFT,
-	TILE.CTL_ROTATE_TOP_RIGHT,
-	TILE.CTL_ROTATE_DOWN_LEFT,
-	TILE.CTL_ROTATE_DOWN_RIGHT
-}
-
-local SPEED_FADE_FILTER = {
-	NONE = 0,
-	TURN = 1,
-	TILE = 2,
-}
-
 local function get_tile(layer, tx, ty)
 	return tilemap.get_tile(ID.TILEMAP.THIS, layer, tx, ty)
 end
@@ -94,7 +80,6 @@ function init(self)
 	}
 
 	self.props = {
-		max_angle = 2, -- в градусах
 		max_speed = 450, -- в пикселях/сек
 		acceleration_time = 2, -- в секундах
 		rotation_time = 1, -- в секундах
@@ -215,7 +200,7 @@ function update(self, dt)
 			end
 		end
 	end
-	
+
 	local accel_time = math.min(self.time.acceleration / self.props.brake_time, 1)
 	
 	self.velocity = vmath.lerp(accel_time, self.prev_velocity, self.target_velocity)
