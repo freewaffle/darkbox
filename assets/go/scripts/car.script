@@ -78,7 +78,7 @@ function init(self)
 
 	self.props = {
 		max_angle = 2, -- в градусах
-		max_speed = 250, -- в пикселях/сек
+		max_speed = 450, -- в пикселях/сек
 		acceleration_time = 2, -- в секундах
 		rotation_time = 1, -- в секундах
 		brake_time = 0.5, -- в секундах
@@ -88,7 +88,7 @@ function init(self)
 
 	self.prev_velocity = 0
 
-	self.velocity = 250
+	self.velocity = self.props.max_speed
 	go.set_position(vmath.vector3((128 * 8) - 65, (128 * 8) - 65, 1.5))
 end
 
@@ -111,7 +111,7 @@ function update(self, dt)
 			local mid_x = math.abs(target_position.x - current_position.x)
 			local mid_y = math.abs(target_position.y - current_position.y)
 			local mid_position = (mid_x + mid_y) / 2
-			local strength = 0.5
+			local strength = 1
 			self.velocity = math.min(mid_position * strength, self.props.max_speed)
 		end
 		
