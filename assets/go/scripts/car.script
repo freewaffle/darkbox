@@ -88,7 +88,7 @@ function init(self)
 
 	self.prev_velocity = 0
 
-	self.velocity = self.props.max_speed
+	self.velocity = 250 --self.props.max_speed
 	go.set_position(vmath.vector3((128 * 8) - 65, (128 * 8) - 65, 1.5))
 end
 
