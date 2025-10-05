@@ -1,8 +1,8 @@
 profiles {
-  name: "576p"
+  name: "768p"
   qualifiers {
-    width: 768
-    height: 576
+    width: 1024
+    height: 768
   }
 }
 profiles {
@@ -13,7 +13,7 @@ profiles {
   }
 }
 profiles {
-  name: "810p"
+  name: "810p (test)"
   qualifiers {
     width: 1440
     height: 810
