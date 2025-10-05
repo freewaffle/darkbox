@@ -42,6 +42,24 @@ local TILE = {
 	CTL_ROTATE_DOWN_RIGHT = 16,
 }
 
+-- типы плиток, при которых нужно замедлиться (фильтр `SPEED_FADE_FILTER.TURN`)
+local TURN_TILES = {
+	TILE.CTL_ROTATE_TOP_LEFT,
+	TILE.CTL_ROTATE_TOP_RIGHT,
+	TILE.CTL_ROTATE_DOWN_LEFT,
+	TILE.CTL_ROTATE_DOWN_RIGHT
+}
+
+local SPEED_FADE_FILTER = {
+	NONE = 0,
+	TURN = 1,
+	TILE = 2,
+}
+
+local function get_tile(layer, tx, ty)
+	return tilemap.get_tile(ID.TILEMAP.THIS, layer, tx, ty)
+end
+
 local function get_tile_pos()
 	local tx, ty
 	do
@@ -54,8 +72,7 @@ end
 
 local function get_current_tile(layer)
 	local tx, ty = get_tile_pos()
-	local tile = tilemap.get_tile(ID.TILEMAP.THIS, layer, tx, ty)
-	return tile
+	return get_tile(layer, tx, ty)
 end
 
 --------------------------------------------------------------------------------
@@ -82,14 +99,13 @@ function init(self)
 		acceleration_time = 2, -- в секундах
 		rotation_time = 1, -- в секундах
 		brake_time = 0.5, -- в секундах
-		fade_speed = false,
+		speed_fade_filter = SPEED_FADE_FILTER.TURN,
 		traffic_mode = true
 	}
 
 	self.prev_velocity = 0
 
 	self.velocity = 250 --self.props.max_speed
-	go.set_position(vmath.vector3((128 * 8) - 65, (128 * 8) - 65, 1.5))
 end
 
 function update(self, dt)
@@ -97,29 +113,44 @@ function update(self, dt)
 		self.time[timer] = value + dt
 	end
 
+	local accel = 1
+
 	local stop = function ()
 		self.time.acceleration = 0
 		self.prev_velocity = self.velocity
 		self.target_tile = nil
 	end
 
+	local set_accel = function (mode)
+		accel = mode
+		self.prev_velocity = self.velocity
+		self.time.acceleration = 0
+	end
+
 	if self.target_tile then
 		local current_position = go.get_position()
 		local target_position = vmath.vector3(TILESIZE * self.target_tile.x - 65, TILESIZE * self.target_tile.y - 65, 0)
 
-		if self.props.fade_speed then
-			local mid_x = math.abs(target_position.x - current_position.x)
-			local mid_y = math.abs(target_position.y - current_position.y)
-			local mid_position = (mid_x + mid_y) / 2
-			local strength = 1
-			self.velocity = math.min(mid_position * strength, self.props.max_speed)
+		local filter = self.props.speed_fade_filter
+		if filter == SPEED_FADE_FILTER.TILE then
+			set_accel(-1)
+		elseif filter == SPEED_FADE_FILTER.TURN then
+			local target_tile = get_tile(ID.TILEMAP.TRAFFIC, self.target_tile.x, self.target_tile.y)
+			
+			for n, tile in ipairs(TURN_TILES) do
+				--print(target_tile, tile)
+				if tile == target_tile then
+					set_accel(-1)
+					break
+				end
+			end
 		end
 		
 		local target_angle = vmath.quat_rotation_z(math.atan2(current_position.x - target_position.x, target_position.y - current_position.y))
 		local current_angle = go.get_rotation()
 		local smoothness = 0.3
 		local rotation_time = math.min(self.time.rotation / self.props.rotation_time, 1)
-		current_angle = vmath.lerp(smoothness * rotation_time, current_angle, target_angle)
+		current_angle = vmath.slerp(smoothness * rotation_time, current_angle, target_angle)
 		
 		go.set_rotation(current_angle)
 
@@ -202,15 +233,25 @@ function update(self, dt)
 				end
 
 				self.time.rotation = 0
+				if accel ~= 1 then set_accel(1) end
 			else
 				stop()
 			end
 		end
-	else
-		local time = math.min(self.time.acceleration / self.props.brake_time, 1)
-		self.velocity = vmath.lerp(time, self.prev_velocity, 0)
 	end
-
+	
+	local accel_time = math.min(self.time.acceleration / self.props.brake_time, 1)
+	
+	local target_velocity
+	if accel == 1 then
+		target_velocity = self.props.max_speed
+	elseif accel == 0 then
+		target_velocity = self.velocity
+	elseif accel == -1 then
+		target_velocity = 0
+	end
+	
+	self.velocity = vmath.lerp(accel_time, self.prev_velocity, assert(target_velocity, "no target velocity! invalid accel mode set?"))
 	go.set_position(go.get_position() + vmath.rotate(go.get_rotation(), (vmath.vector3(0, self.velocity, 0) * dt)))
 
 	collectgarbage()
