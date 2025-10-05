@@ -14,6 +14,10 @@ instances {
     y: 959.0
   }
 }
+instances {
+  id: "system"
+  prototype: "/assets/go/system.go"
+}
 scale_along_z: 0
 embedded_instances {
   id: "player"

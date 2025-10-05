@@ -1,0 +1,30 @@
+local ACTION = {
+	TOGGLE_PROFILER = hash("toggle_profiler"),
+	PROFILER_PLAYPAUSE = hash("profiler_playpause")
+}
+
+local profiler_enabled = false
+local profiling = true
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+end
+
+function on_input(self, action_id, action)
+	if not action.pressed then return end
+	
+	if action_id == ACTION.TOGGLE_PROFILER then
+		profiler_enabled = not profiler_enabled
+		profiler.enable(profiler_enabled)
+		profiler.enable_ui(profiler_enabled)
+	elseif action_id == ACTION.PROFILER_PLAYPAUSE then
+		profiling = not profiling
+		local mode
+		if profiling then
+			mode = profiler.MODE_RUN
+		else
+			mode = profiler.MODE_SHOW_PEAK_FRAME
+		end
+		profiler.set_ui_mode(mode)
+	end
+end

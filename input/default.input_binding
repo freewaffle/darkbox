@@ -14,6 +14,14 @@ key_trigger {
   input: KEY_D
   action: "move_right"
 }
+key_trigger {
+  input: KEY_F2
+  action: "toggle_profiler"
+}
+key_trigger {
+  input: KEY_F3
+  action: "profiler_playpause"
+}
 mouse_trigger {
   input: MOUSE_BUTTON_LEFT
   action: "mouse_left"
