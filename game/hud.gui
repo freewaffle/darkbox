@@ -23,16 +23,21 @@ nodes {
   enabled: false
 }
 nodes {
+  size {
+    x: 1440.0
+    y: 810.0
+  }
   type: TYPE_BOX
   id: "vignette/box"
   parent: "vignette"
   alpha: 0.4
+  overridden_fields: 4
   overridden_fields: 30
   template_node_child: true
 }
 nodes {
   position {
-    x: 1870.0
+    x: 1380.0
     y: 50.0
   }
   size {
@@ -100,7 +105,7 @@ nodes {
 }
 nodes {
   size {
-    x: 1600.0
+    x: 1110.0
     y: 80.0
   }
   color {
@@ -122,7 +127,7 @@ nodes {
     y: 10.0
   }
   size {
-    x: 1580.0
+    x: 1090.0
     y: 60.0
   }
   type: TYPE_TEXT
