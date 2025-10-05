@@ -99,13 +99,12 @@ function init(self)
 		acceleration_time = 2, -- в секундах
 		rotation_time = 1, -- в секундах
 		brake_time = 0.5, -- в секундах
-		speed_fade_filter = SPEED_FADE_FILTER.TURN,
 		traffic_mode = true
 	}
 
 	self.prev_velocity = 0
-
-	self.velocity = 250 --self.props.max_speed
+	self.velocity = 0
+	self.target_velocity = 250
 end
 
 function update(self, dt)
@@ -113,38 +112,15 @@ function update(self, dt)
 		self.time[timer] = value + dt
 	end
 
-	local accel = 1
-
 	local stop = function ()
 		self.time.acceleration = 0
 		self.prev_velocity = self.velocity
 		self.target_tile = nil
 	end
 
-	local set_accel = function (mode)
-		accel = mode
-		self.prev_velocity = self.velocity
-		self.time.acceleration = 0
-	end
-
 	if self.target_tile then
 		local current_position = go.get_position()
 		local target_position = vmath.vector3(TILESIZE * self.target_tile.x - 65, TILESIZE * self.target_tile.y - 65, 0)
-
-		local filter = self.props.speed_fade_filter
-		if filter == SPEED_FADE_FILTER.TILE then
-			set_accel(-1)
-		elseif filter == SPEED_FADE_FILTER.TURN then
-			local target_tile = get_tile(ID.TILEMAP.TRAFFIC, self.target_tile.x, self.target_tile.y)
-			
-			for n, tile in ipairs(TURN_TILES) do
-				--print(target_tile, tile)
-				if tile == target_tile then
-					set_accel(-1)
-					break
-				end
-			end
-		end
 		
 		local target_angle = vmath.quat_rotation_z(math.atan2(current_position.x - target_position.x, target_position.y - current_position.y))
 		local current_angle = go.get_rotation()
@@ -233,7 +209,6 @@ function update(self, dt)
 				end
 
 				self.time.rotation = 0
-				if accel ~= 1 then set_accel(1) end
 			else
 				stop()
 			end
@@ -242,16 +217,7 @@ function update(self, dt)
 	
 	local accel_time = math.min(self.time.acceleration / self.props.brake_time, 1)
 	
-	local target_velocity
-	if accel == 1 then
-		target_velocity = self.props.max_speed
-	elseif accel == 0 then
-		target_velocity = self.velocity
-	elseif accel == -1 then
-		target_velocity = 0
-	end
-	
-	self.velocity = vmath.lerp(accel_time, self.prev_velocity, assert(target_velocity, "no target velocity! invalid accel mode set?"))
+	self.velocity = vmath.lerp(accel_time, self.prev_velocity, self.target_velocity)
 	go.set_position(go.get_position() + vmath.rotate(go.get_rotation(), (vmath.vector3(0, self.velocity, 0) * dt)))
 
 	collectgarbage()
