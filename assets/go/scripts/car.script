@@ -180,6 +180,20 @@ function update(self, dt)
 						x = -1,
 						y = 1
 					}
+				elseif tile == TILE.CTL_ROTATE_DOWN_LEFT then
+					self.target_tile.x = self.target_tile.x + 1
+					self.target_tile.y = self.target_tile.y + 1
+					self.direction = {
+						x = 1,
+						y = -1
+					}
+				elseif tile == TILE.CTL_ROTATE_DOWN_RIGHT then
+					self.target_tile.x = self.target_tile.x - 1
+					self.target_tile.y = self.target_tile.y + 1
+					self.direction = {
+						x = -1,
+						y = -1
+					}
 				elseif tile == TILE.CTL_STOP then
 					stop()
 				else
