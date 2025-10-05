@@ -2,6 +2,7 @@
 title = Darkbox
 version = 0.1
 developer = kandelasky
+compress_archive = 0
 
 [bootstrap]
 main_collection = /game/game.collectionc
