@@ -35,7 +35,7 @@ local URL = {
 		TARGET_PTR = msg.url("game:/factory#target_ptr")
 	},
 
-	HUD = msg.url("game:/ui#hud"),
+	HUD = msg.url("game:/hud#hud"),
 	MAP_CTL = msg.url("game:/map#script")
 }
 

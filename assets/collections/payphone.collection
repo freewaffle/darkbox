@@ -1,14 +1,14 @@
 name: "payphone"
 instances {
   id: "arrow"
-  prototype: "/assets/go/arrow.go"
+  prototype: "/assets/go/decora/arrow.go"
   position {
     y: -40.0
   }
 }
 instances {
   id: "shadow"
-  prototype: "/assets/go/cshadow.go"
+  prototype: "/assets/go/decora/cshadow.go"
 }
 scale_along_z: 0
 embedded_instances {

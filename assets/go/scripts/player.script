@@ -71,9 +71,7 @@ local ID = {
 		GROUND = hash("ground")
 	},
 
-	UI = {
-		HUD = msg.url("game:/ui#hud")
-	},
+	HUD = msg.url("game:/ui#hud"),
 
 	GROUP = {
 		PAYPHONE = hash("payphone")
@@ -130,7 +128,7 @@ local function set_hp(to)
 
 	hp = to
 
-	msg.post(ID.UI.HUD, MSG.UPDATE_HP, {to})
+	msg.post(ID.HUD, MSG.UPDATE_HP, {to})
 	hp_trigger()
 end
 
@@ -199,7 +197,7 @@ function init(self)
 end
 
 function update(self, dt)
-	local special_url = msg.url("game:/car")
+	local special_url = nil--msg.url("game:/car")
 	local pos = go.get_position()
 	
 	if self.velocity.x ~= 0 or self.velocity.y ~= 0 then
