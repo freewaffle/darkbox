@@ -69,10 +69,11 @@ function init(self)
 		rotation = 0,
 	}
 
-	self.target_tile = {
+	self.target_tile = nil
+	--[[ {
 		x = 8,
 		y = 9
-	}
+	} ]]--
 
 	self.direction = {
 		x = 0,
@@ -96,22 +97,122 @@ function init(self)
 	self.prev_velocity = 0
 	self.velocity = 0
 	self.target_velocity = self.speed.fast
-
-	self.update_velocity = function (vel)
-		self.target_velocity = assert(vel, "nil velocity")
-		self.prev_velocity = self.velocity
-		self.time.acceleration = 0
-	end
-
-	self.stop = function ()
-		self.target_tile = nil
-		self.update_velocity(0)
-	end
 end
 
 function update(self, dt)
 	for timer, value in pairs(self.time) do
 		self.time[timer] = value + dt
+	end
+
+	local update_velocity = function (vel)
+		self.target_velocity = assert(vel, "nil velocity")
+		self.prev_velocity = self.velocity
+		self.time.acceleration = 0
+	end
+
+	local stop = function ()
+		self.target_tile = nil
+		update_velocity(0)
+	end
+
+	local tile_action = function ()
+		local tile = get_current_tile(ID.TILEMAP.TRAFFIC)
+		local slow = false
+
+		if not self.target_tile then
+			print("redefined self.target_tile")
+			local tx, ty = get_tile_pos()
+			self.target_tile = {
+				x = tx,
+				y = ty
+			}
+		end
+
+		if tile == TILE.CTL_UP then
+			self.target_tile.y = self.target_tile.y + 1
+			self.direction = {
+				x = 0,
+				y = 1
+			}
+		elseif tile == TILE.CTL_RIGHT then
+			self.target_tile.x = self.target_tile.x + 1
+			self.direction = {
+				x = 1,
+				y = 0
+			}
+		elseif tile == TILE.CTL_DOWN then
+			self.target_tile.y = self.target_tile.y - 1
+			self.direction = {
+				x = 0,
+				y = -1
+			}
+		elseif tile == TILE.CTL_LEFT then
+			self.target_tile.x = self.target_tile.x - 1
+			self.direction = {
+				x = -1,
+				y = 0
+			}
+		elseif tile == TILE.CTL_CONTINUE then
+			---------------------- X ----------------------
+			if self.direction.x >= 1 then
+				self.target_tile.x = self.target_tile.x + 1
+			elseif self.direction.x <= -1 then
+				self.target_tile.x = self.target_tile.x - 1
+				---------------------- Y ----------------------
+			elseif self.direction.y >= 1 then
+				self.target_tile.y = self.target_tile.y + 1
+			elseif self.direction.y <= -1 then
+				self.target_tile.y = self.target_tile.y - 1
+			end
+			-----------------------------------------------
+		elseif tile == TILE.CTL_ROTATE_TOP_LEFT then
+			self.target_tile.x = self.target_tile.x + 1
+			self.target_tile.y = self.target_tile.y + 1
+			self.direction = {
+				x = 1,
+				y = 1
+			}
+			slow = true
+		elseif tile == TILE.CTL_ROTATE_TOP_RIGHT then
+			self.target_tile.x = self.target_tile.x - 1
+			self.target_tile.y = self.target_tile.y + 1
+			self.direction = {
+				x = -1,
+				y = 1
+			}
+			slow = true
+		elseif tile == TILE.CTL_ROTATE_DOWN_LEFT then
+			self.target_tile.x = self.target_tile.x + 1
+			self.target_tile.y = self.target_tile.y - 1
+			self.direction = {
+				x = 1,
+				y = -1
+			}
+			slow = true
+		elseif tile == TILE.CTL_ROTATE_DOWN_RIGHT then
+			self.target_tile.x = self.target_tile.x - 1
+			self.target_tile.y = self.target_tile.y - 1
+			self.direction = {
+				x = -1,
+				y = -1
+			}
+			slow = true
+		elseif tile == TILE.CTL_STOP then
+			self.props.traffic_mode = false
+			stop()
+			print("stopped")
+		else
+			print("PANIC: not a control tile we're at!")
+			stop()
+		end
+
+		if slow then
+			update_velocity(self.speed.slow)
+		else
+			update_velocity(self.speed.fast)
+		end
+
+		self.time.rotation = 0
 	end
 
 	if self.target_tile then
@@ -130,103 +231,21 @@ function update(self, dt)
 		local target_x, target_y = self.target_tile.x, self.target_tile.y
 		if tile_x == target_x and tile_y == target_y then
 			if self.props.traffic_mode then
-				local tile = get_current_tile(ID.TILEMAP.TRAFFIC)
-				
-				local slow = false
-
-				if tile == TILE.CTL_UP then
-					self.target_tile.y = self.target_tile.y + 1
-					self.direction = {
-						x = 0,
-						y = 1
-					}
-				elseif tile == TILE.CTL_RIGHT then
-					self.target_tile.x = self.target_tile.x + 1
-					self.direction = {
-						x = 1,
-						y = 0
-					}
-				elseif tile == TILE.CTL_DOWN then
-					self.target_tile.y = self.target_tile.y - 1
-					self.direction = {
-						x = 0,
-						y = -1
-					}
-				elseif tile == TILE.CTL_LEFT then
-					self.target_tile.x = self.target_tile.x - 1
-					self.direction = {
-						x = -1,
-						y = 0
-					}
-				elseif tile == TILE.CTL_CONTINUE then
-					---------------------- X ----------------------
-					if self.direction.x >= 1 then
-						self.target_tile.x = self.target_tile.x + 1
-					elseif self.direction.x <= -1 then
-						self.target_tile.x = self.target_tile.x - 1
-					---------------------- Y ----------------------
-					elseif self.direction.y >= 1 then
-						self.target_tile.y = self.target_tile.y + 1
-					elseif self.direction.y <= -1 then
-						self.target_tile.y = self.target_tile.y - 1
-					end
-					-----------------------------------------------
-				elseif tile == TILE.CTL_ROTATE_TOP_LEFT then
-					self.target_tile.x = self.target_tile.x + 1
-					self.target_tile.y = self.target_tile.y + 1
-					self.direction = {
-						x = 1,
-						y = 1
-					}
-					slow = true
-				elseif tile == TILE.CTL_ROTATE_TOP_RIGHT then
-					self.target_tile.x = self.target_tile.x - 1
-					self.target_tile.y = self.target_tile.y + 1
-					self.direction = {
-						x = -1,
-						y = 1
-					}
-					slow = true
-				elseif tile == TILE.CTL_ROTATE_DOWN_LEFT then
-					self.target_tile.x = self.target_tile.x + 1
-					self.target_tile.y = self.target_tile.y - 1
-					self.direction = {
-						x = 1,
-						y = -1
-					}
-					slow = true
-				elseif tile == TILE.CTL_ROTATE_DOWN_RIGHT then
-					self.target_tile.x = self.target_tile.x - 1
-					self.target_tile.y = self.target_tile.y - 1
-					self.direction = {
-						x = -1,
-						y = -1
-					}
-					slow = true
-				elseif tile == TILE.CTL_STOP then
-					self.stop()
-				else
-					print("PANIC: not a control tile we're at!")
-					self.stop()
-				end
-
-				if slow then
-					self.update_velocity(self.speed.slow)
-				else
-					self.update_velocity(self.speed.fast)
-				end
-				
-				self.time.rotation = 0
+				tile_action()
 			else
 				-- not implemented
-				self.stop()
+				stop()
 			end
 		end
 	else
-		self.update_velocity(0)
+		if self.props.traffic_mode then
+			tile_action()
+		elseif self.target_velocity ~= 0 then
+			update_velocity(0)
+		end
 	end
 
-	do
+	if self.velocity ~= self.target_velocity then
 		local time
 		if self.target_velocity >= self.prev_velocity then
 			time = self.props.acceleration_time
@@ -237,7 +256,7 @@ function update(self, dt)
 		self.velocity = vmath.lerp(time, self.prev_velocity, self.target_velocity)
 	end
 
-	do
+	if math.floor(self.velocity) ~= 0 then
 		go.set_position(go.get_position() + vmath.rotate(go.get_rotation(), (vmath.vector3(0, self.velocity, 0) * dt)))
 	end
 
