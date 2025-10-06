@@ -8,7 +8,7 @@ compress_archive = 0
 main_collection = /game/game.collectionc
 
 [input]
-game_binding = /input/default.input_bindingc
+game_binding = /assets/default.input_bindingc
 use_accelerometer = 0
 
 [display]

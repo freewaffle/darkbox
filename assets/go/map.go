@@ -1,6 +1,6 @@
 components {
   id: "script"
-  component: "/game/scripts/map.script"
+  component: "/assets/go/scripts/map.script"
 }
 components {
   id: "tilemap"

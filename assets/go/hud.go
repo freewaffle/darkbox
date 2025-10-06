@@ -1,4 +1,4 @@
 components {
   id: "hud"
-  component: "/game/hud.gui"
+  component: "/assets/gui/hud.gui"
 }

@@ -1,4 +1,4 @@
 components {
   id: "camera"
-  component: "/assets/components/camera/default.camera"
+  component: "/assets/camera/default.camera"
 }
