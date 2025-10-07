@@ -4,18 +4,8 @@ instances {
   prototype: "/assets/go/system.go"
 }
 instances {
-  id: "player"
-  prototype: "/assets/go/player.go"
-  children: "shadow"
-}
-instances {
   id: "sound"
   prototype: "/assets/go/sound.go"
-}
-instances {
-  id: "map"
-  prototype: "/assets/go/map.go"
-  children: "factory"
 }
 instances {
   id: "camera"
@@ -26,24 +16,16 @@ instances {
   prototype: "/assets/go/hud.go"
 }
 instances {
-  id: "shadow"
-  prototype: "/assets/go/decora/cshadow.go"
-  position {
-    z: 0.9
-  }
+  id: "map"
+  prototype: "/assets/go/map.go"
+  children: "factory"
 }
 instances {
   id: "factory"
   prototype: "/assets/go/factory.go"
 }
+instances {
+  id: "player"
+  prototype: "/assets/go/player.go"
+}
 scale_along_z: 0
-embedded_instances {
-  id: "playerobject"
-  children: "player"
-  data: ""
-}
-embedded_instances {
-  id: "mapobject"
-  children: "map"
-  data: ""
-}

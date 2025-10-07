@@ -1,49 +1,28 @@
-embedded_components {
+components {
   id: "sp1"
-  type: "sound"
-  data: "sound: \"/assets/raw/sounds/misc/sp/sp1.ogg\"\n"
-  "group: \"effects\"\n"
-  ""
+  component: "/assets/sounds/sp/sp1.sound"
 }
-embedded_components {
+components {
   id: "sp2"
-  type: "sound"
-  data: "sound: \"/assets/raw/sounds/misc/sp/sp2.ogg\"\n"
-  "group: \"effects\"\n"
-  ""
+  component: "/assets/sounds/sp/sp2.sound"
 }
-embedded_components {
+components {
   id: "sp3"
-  type: "sound"
-  data: "sound: \"/assets/raw/sounds/misc/sp/sp3.ogg\"\n"
-  "group: \"effects\"\n"
-  ""
+  component: "/assets/sounds/sp/sp3.sound"
 }
-embedded_components {
+components {
   id: "sp4"
-  type: "sound"
-  data: "sound: \"/assets/raw/sounds/misc/sp/sp4.ogg\"\n"
-  "group: \"effects\"\n"
-  ""
+  component: "/assets/sounds/sp/sp4.sound"
 }
-embedded_components {
+components {
   id: "sp5"
-  type: "sound"
-  data: "sound: \"/assets/raw/sounds/misc/sp/sp5.ogg\"\n"
-  "group: \"effects\"\n"
-  ""
+  component: "/assets/sounds/sp/sp5.sound"
 }
-embedded_components {
+components {
   id: "sp6"
-  type: "sound"
-  data: "sound: \"/assets/raw/sounds/misc/sp/sp6.ogg\"\n"
-  "group: \"effects\"\n"
-  ""
+  component: "/assets/sounds/sp/sp6.sound"
 }
-embedded_components {
+components {
   id: "sp7"
-  type: "sound"
-  data: "sound: \"/assets/raw/sounds/misc/sp/sp7.ogg\"\n"
-  "group: \"effects\"\n"
-  ""
+  component: "/assets/sounds/sp/sp7.sound"
 }

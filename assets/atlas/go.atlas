@@ -5,7 +5,7 @@ images {
   image: "/assets/raw/images/payphone.png"
 }
 images {
-  image: "/assets/raw/images/shadow.png"
+  image: "/assets/raw/images/sphere_shadow.png"
 }
 images {
   image: "/assets/raw/images/arrow.png"
