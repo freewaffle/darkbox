@@ -1,0 +1,54 @@
+type: COLLISION_OBJECT_TYPE_DYNAMIC
+mass: 1.0
+friction: 0.0
+restitution: 0.5
+group: "dynamic"
+mask: "payphone"
+mask: "static"
+mask: "dynamic"
+embedded_collision_shape {
+  shapes {
+    shape_type: TYPE_BOX
+    position {
+    }
+    rotation {
+    }
+    index: 0
+    count: 3
+    id: "head"
+  }
+  shapes {
+    shape_type: TYPE_BOX
+    position {
+      x: -20.0
+    }
+    rotation {
+    }
+    index: 3
+    count: 3
+    id: "left"
+  }
+  shapes {
+    shape_type: TYPE_BOX
+    position {
+      x: 20.0
+    }
+    rotation {
+    }
+    index: 6
+    count: 3
+    id: "right"
+  }
+  data: 15.5
+  data: 15.5
+  data: 10.0
+  data: 6.0
+  data: 5.5
+  data: 10.0
+  data: 6.0
+  data: 5.5
+  data: 10.0
+}
+locked_rotation: true
+event_collision: false
+event_contact: false
