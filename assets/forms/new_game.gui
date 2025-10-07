@@ -8,7 +8,7 @@ fonts {
 }
 textures {
   name: "maps"
-  texture: "/assets/raw/images/map_previews/map_previews.atlas"
+  texture: "/assets/atlas/map_previews.atlas"
 }
 nodes {
   type: TYPE_BOX
