@@ -1,31 +1,31 @@
 images {
-  image: "/assets/images/player/player_1.png"
+  image: "/assets/raw/images/player/player_1.png"
 }
 images {
-  image: "/assets/images/payphone.png"
+  image: "/assets/raw/images/payphone.png"
 }
 images {
-  image: "/assets/images/shadow.png"
+  image: "/assets/raw/images/shadow.png"
 }
 images {
-  image: "/assets/images/arrow.png"
+  image: "/assets/raw/images/arrow.png"
 }
 images {
-  image: "/assets/images/vehicle/cartest.png"
+  image: "/assets/raw/images/vehicle/cartest.png"
 }
 animations {
   id: "player_moving"
   images {
-    image: "/assets/images/player/player_2.png"
+    image: "/assets/raw/images/player/player_2.png"
   }
   images {
-    image: "/assets/images/player/player_1.png"
+    image: "/assets/raw/images/player/player_1.png"
   }
   images {
-    image: "/assets/images/player/player_4.png"
+    image: "/assets/raw/images/player/player_4.png"
   }
   images {
-    image: "/assets/images/player/player_3.png"
+    image: "/assets/raw/images/player/player_3.png"
   }
   playback: PLAYBACK_LOOP_FORWARD
   fps: 4

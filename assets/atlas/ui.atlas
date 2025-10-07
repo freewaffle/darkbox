@@ -1,13 +1,13 @@
 images {
-  image: "/assets/images/ui/button.png"
+  image: "/assets/raw/images/ui/button.png"
 }
 images {
-  image: "/assets/images/ui/panel.png"
+  image: "/assets/raw/images/ui/panel.png"
 }
 images {
-  image: "/assets/images/ui/rect_glow.png"
+  image: "/assets/raw/images/ui/rect_glow.png"
 }
 images {
-  image: "/assets/images/ui/vignette.png"
+  image: "/assets/raw/images/ui/vignette.png"
 }
 extrude_borders: 2

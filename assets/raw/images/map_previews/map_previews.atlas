@@ -1,0 +1,4 @@
+images {
+  image: "/assets/raw/images/map_previews/metacity.jpg"
+}
+extrude_borders: 2
