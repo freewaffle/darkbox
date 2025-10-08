@@ -29,17 +29,19 @@ local TILESIZE = 128
 
 local TILE = {
 	WATER = 3,
-	
-	CTL_CONTINUE = 7,
-	CTL_STOP = 8,
-	CTL_UP = 9,
-	CTL_RIGHT = 10,
-	CTL_DOWN = 11,
-	CTL_LEFT = 12,
-	CTL_ROTATE_TOP_LEFT = 13,
-	CTL_ROTATE_TOP_RIGHT = 14,
-	CTL_ROTATE_DOWN_LEFT = 15,
-	CTL_ROTATE_DOWN_RIGHT = 16,
+
+	NAV = {
+		CONTINUE = 7,
+		STOP = 8,
+		UP = 9,
+		RIGHT = 10,
+		DOWN = 11,
+		LEFT = 12,
+		ROTATE_TOP_LEFT = 13,
+		ROTATE_TOP_RIGHT = 14,
+		ROTATE_DOWN_LEFT = 15,
+		ROTATE_DOWN_RIGHT = 16,
+	},
 }
 
 local function get_tile(layer, tx, ty)
@@ -62,6 +64,124 @@ local function get_current_tile(layer)
 end
 
 --------------------------------------------------------------------------------
+
+local function log(C, msg)
+	print(string.format("car %d: %s", assert(C.index), msg))
+end
+
+local function update_velocity(C, vel)
+	C.target_velocity = assert(vel, "nil velocity")
+	C.prev_velocity = C.velocity
+	C.time.acceleration = 0
+end
+
+local function stop(C)
+	C.target_tile = nil
+	update_velocity(C, 0)
+end
+
+local function tile_action(C)
+	if not C.target_tile and C.props.traffic_mode then
+		log(C, "redefined target_tile")
+		local tx, ty = get_tile_pos()
+		C.target_tile = {
+			x = tx,
+			y = ty
+		}
+	end
+
+	local tile = get_current_tile(ID.TILEMAP.TRAFFIC)
+	local slow = false
+
+	if tile == TILE.NAV.UP then
+		C.target_tile.y = C.target_tile.y + 1
+		C.direction = {
+			x = 0,
+			y = 1
+		}
+	elseif tile == TILE.NAV.RIGHT then
+		C.target_tile.x = C.target_tile.x + 1
+		C.direction = {
+			x = 1,
+			y = 0
+		}
+	elseif tile == TILE.NAV.DOWN then
+		C.target_tile.y = C.target_tile.y - 1
+		C.direction = {
+			x = 0,
+			y = -1
+		}
+	elseif tile == TILE.NAV.LEFT then
+		C.target_tile.x = C.target_tile.x - 1
+		C.direction = {
+			x = -1,
+			y = 0
+		}
+	elseif tile == TILE.NAV.CONTINUE then
+		---------------------- X ----------------------
+		if C.direction.x >= 1 then
+			C.target_tile.x = C.target_tile.x + 1
+		elseif C.direction.x <= -1 then
+			C.target_tile.x = C.target_tile.x - 1
+			---------------------- Y ----------------------
+		elseif C.direction.y >= 1 then
+			C.target_tile.y = C.target_tile.y + 1
+		elseif C.direction.y <= -1 then
+			C.target_tile.y = C.target_tile.y - 1
+		end
+		-----------------------------------------------
+	elseif tile == TILE.NAV.ROTATE_TOP_LEFT then
+		C.target_tile.x = C.target_tile.x + 1
+		C.target_tile.y = C.target_tile.y + 1
+		C.direction = {
+			x = 1,
+			y = 1
+		}
+		slow = true
+	elseif tile == TILE.NAV.ROTATE_TOP_RIGHT then
+		C.target_tile.x = C.target_tile.x - 1
+		C.target_tile.y = C.target_tile.y + 1
+		C.direction = {
+			x = -1,
+			y = 1
+		}
+		slow = true
+	elseif tile == TILE.NAV.ROTATE_DOWN_LEFT then
+		C.target_tile.x = C.target_tile.x + 1
+		C.target_tile.y = C.target_tile.y - 1
+		C.direction = {
+			x = 1,
+			y = -1
+		}
+		slow = true
+	elseif tile == TILE.NAV.ROTATE_DOWN_RIGHT then
+		C.target_tile.x = C.target_tile.x - 1
+		C.target_tile.y = C.target_tile.y - 1
+		C.direction = {
+			x = -1,
+			y = -1
+		}
+		slow = true
+	elseif tile == TILE.NAV.STOP then
+		C.props.traffic_mode = false
+		stop(C)
+		log(C, "stopped")
+	else
+		log(C, "PANIC: not a navigation tile!")
+		C.props.traffic_mode = false
+		stop(C)
+	end
+
+	if slow then
+		update_velocity(C, C.speed.slow)
+	else
+		update_velocity(C, C.speed.fast)
+	end
+
+	C.time.rotation = 0
+end
+
+go.property("index", 0)
 
 function init(self)
 	self.time = {
@@ -104,117 +224,6 @@ function update(self, dt)
 		self.time[timer] = value + dt
 	end
 
-	local update_velocity = function (vel)
-		self.target_velocity = assert(vel, "nil velocity")
-		self.prev_velocity = self.velocity
-		self.time.acceleration = 0
-	end
-
-	local stop = function ()
-		self.target_tile = nil
-		update_velocity(0)
-	end
-
-	local tile_action = function ()
-		local tile = get_current_tile(ID.TILEMAP.TRAFFIC)
-		local slow = false
-
-		if not self.target_tile then
-			print("redefined self.target_tile")
-			local tx, ty = get_tile_pos()
-			self.target_tile = {
-				x = tx,
-				y = ty
-			}
-		end
-
-		if tile == TILE.CTL_UP then
-			self.target_tile.y = self.target_tile.y + 1
-			self.direction = {
-				x = 0,
-				y = 1
-			}
-		elseif tile == TILE.CTL_RIGHT then
-			self.target_tile.x = self.target_tile.x + 1
-			self.direction = {
-				x = 1,
-				y = 0
-			}
-		elseif tile == TILE.CTL_DOWN then
-			self.target_tile.y = self.target_tile.y - 1
-			self.direction = {
-				x = 0,
-				y = -1
-			}
-		elseif tile == TILE.CTL_LEFT then
-			self.target_tile.x = self.target_tile.x - 1
-			self.direction = {
-				x = -1,
-				y = 0
-			}
-		elseif tile == TILE.CTL_CONTINUE then
-			---------------------- X ----------------------
-			if self.direction.x >= 1 then
-				self.target_tile.x = self.target_tile.x + 1
-			elseif self.direction.x <= -1 then
-				self.target_tile.x = self.target_tile.x - 1
-				---------------------- Y ----------------------
-			elseif self.direction.y >= 1 then
-				self.target_tile.y = self.target_tile.y + 1
-			elseif self.direction.y <= -1 then
-				self.target_tile.y = self.target_tile.y - 1
-			end
-			-----------------------------------------------
-		elseif tile == TILE.CTL_ROTATE_TOP_LEFT then
-			self.target_tile.x = self.target_tile.x + 1
-			self.target_tile.y = self.target_tile.y + 1
-			self.direction = {
-				x = 1,
-				y = 1
-			}
-			slow = true
-		elseif tile == TILE.CTL_ROTATE_TOP_RIGHT then
-			self.target_tile.x = self.target_tile.x - 1
-			self.target_tile.y = self.target_tile.y + 1
-			self.direction = {
-				x = -1,
-				y = 1
-			}
-			slow = true
-		elseif tile == TILE.CTL_ROTATE_DOWN_LEFT then
-			self.target_tile.x = self.target_tile.x + 1
-			self.target_tile.y = self.target_tile.y - 1
-			self.direction = {
-				x = 1,
-				y = -1
-			}
-			slow = true
-		elseif tile == TILE.CTL_ROTATE_DOWN_RIGHT then
-			self.target_tile.x = self.target_tile.x - 1
-			self.target_tile.y = self.target_tile.y - 1
-			self.direction = {
-				x = -1,
-				y = -1
-			}
-			slow = true
-		elseif tile == TILE.CTL_STOP then
-			self.props.traffic_mode = false
-			stop()
-			print("stopped")
-		else
-			print("PANIC: not a control tile we're at!")
-			stop()
-		end
-
-		if slow then
-			update_velocity(self.speed.slow)
-		else
-			update_velocity(self.speed.fast)
-		end
-
-		self.time.rotation = 0
-	end
-
 	if self.target_tile then
 		local current_position = go.get_position()
 		local target_position = vmath.vector3(TILESIZE * self.target_tile.x - 65, TILESIZE * self.target_tile.y - 65, 0)
@@ -231,17 +240,17 @@ function update(self, dt)
 		local target_x, target_y = self.target_tile.x, self.target_tile.y
 		if tile_x == target_x and tile_y == target_y then
 			if self.props.traffic_mode then
-				tile_action()
+				tile_action(self)
 			else
 				-- not implemented
-				stop()
+				stop(self)
 			end
 		end
 	else
 		if self.props.traffic_mode then
-			tile_action()
+			tile_action(self)
 		elseif self.target_velocity ~= 0 then
-			update_velocity(0)
+			update_velocity(self, 0)
 		end
 	end
 
