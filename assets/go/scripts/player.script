@@ -71,7 +71,7 @@ local ID = {
 		GROUND = hash("ground")
 	},
 
-	HUD = msg.url("game:/ui#hud"),
+	HUD = msg.url("game:/hud#hud"),
 
 	GROUP = {
 		PAYPHONE = hash("payphone")
