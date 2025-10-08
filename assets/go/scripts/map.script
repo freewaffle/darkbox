@@ -28,58 +28,106 @@ local MSG = {
 
 local FACTORY = {
 	PAYPHONE = msg.url("game:/factory#payphone"),
-	TARGET_PTR = msg.url("game:/factory#target_ptr")
+	TARGET_PTR = msg.url("game:/factory#target_ptr"),
+	CAR = msg.url("game:/factory#car")
 }
+
+local function randbool(chance)
+	return math.random() <= (chance)
+end
+
+local car_index = 0
+
+local function create_car(tx, ty)
+	local pos; if tx and ty then
+		pos = vmath.vector3(128 * tx - 64, 128 * ty - 64, 1.5)
+	end
+	factory.create(FACTORY.CAR, pos, nil, { index = car_index })
+	car_index = car_index + 1
+end
 
 local function load_map(name)
 	print("loading map: " .. name)
 
 	do
-		local objects = {}
-		
-		local payphones = {}
+		-- создание фабричных объектов
+		do
+			local objects = {}
+			
+			local payphones = {}
 
-		-- local err = function (errmsg)
-		-- 	print("FATAL: " .. errmsg)
-		-- 	msg.post("@system:", "exit", {code = 1})
-		-- end
-		
-		local payphone = function (tx, ty)
-			return {
-				type = "payphone",
-				position = vmath.vector3(128*tx - 64, 128*ty - 64, 1),
-			}
-		end
-		
-		if name == "metacity" then
-			objects.payphones = {
-				payphone(7, 3),
-				payphone(8, 3),
-				payphone(9, 3),
-				payphone(10, 3),
-			}
-		else
-			print("FATAL: no such map: " .. name)
-			msg.post("@system:", "exit", {code = 1})
-		end
+			-- local err = function (errmsg)
+			-- 	print("FATAL: " .. errmsg)
+			-- 	msg.post("@system:", "exit", {code = 1})
+			-- end
+			
+			local payphone = function (tx, ty)
+				return {
+					type = "payphone",
+					position = vmath.vector3(128*tx - 64, 128*ty - 64, 1),
+				}
+			end
+			
+			if name == "metacity" then
+				objects.payphones = {
+					payphone(7, 3),
+					payphone(8, 3),
+					payphone(9, 3),
+					payphone(10, 3),
+				}
+			else
+				print("FATAL: no such map: " .. name)
+				msg.post("@system:", "exit", {code = 1})
+			end
 
-		for key, list in pairs(objects) do
-			for id, obj in ipairs(list) do
-				local TYPE = obj.type
-				local POS = obj.position
-				
-				if TYPE == "payphone" then
-					local instance = collectionfactory.create(FACTORY.PAYPHONE, POS)
-					payphones[#payphones+1] = instance
+			for key, list in pairs(objects) do
+				for id, obj in ipairs(list) do
+					local TYPE = obj.type
+					local POS = obj.position
 					
-					go.animate(assert(instance[hash("/arrow")]), "position.y", go.PLAYBACK_LOOP_PINGPONG, -38, go.EASING_INOUTSINE, 2)
-				elseif TYPE == "target_ptr" then
-					factory.create(FACTORY.TARGET_PTR, POS)
+					if TYPE == "payphone" then
+						local instance = collectionfactory.create(FACTORY.PAYPHONE, POS)
+						payphones[#payphones+1] = instance
+						
+						go.animate(assert(instance[hash("/arrow")]), "position.y", go.PLAYBACK_LOOP_PINGPONG, -38, go.EASING_INOUTSINE, 2)
+					elseif TYPE == "target_ptr" then
+						factory.create(FACTORY.TARGET_PTR, POS)
+					end
 				end
 			end
+
+			msg.post(URL.MCTL, MSG.SET_PAYPHONES, payphones)
 		end
 
-		msg.post(URL.MCTL, MSG.SET_PAYPHONES, payphones)
+		-- создание трафика
+		do
+			local navtiles = {}
+			
+			local x, y, w, h = tilemap.get_bounds("#tilemap")
+			local tiles = tilemap.get_tiles("#tilemap", "traffic")
+			for row = y, y + h - 1 do
+				for column = x, x + w - 1 do
+					local tile = tiles[row][column]
+
+					if tile ~= 0 then
+						navtiles[#navtiles+1] = {
+							x = column,
+							y = row
+						}
+					end
+				end
+			end
+
+			local chance = math.floor(#navtiles / 10) / #navtiles
+			
+			for _, navtile in ipairs(navtiles) do
+				if randbool(chance) then
+					create_car(navtile.x, navtile.y)
+				end
+			end
+
+			print(string.format("navtiles: %d; cars: %d", #navtiles, car_index))
+		end
 	end collectgarbage()
 
 	print("finished loading map")
