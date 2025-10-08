@@ -69,10 +69,10 @@ local function add_object(obj)
 	local TYPE = obj.type
 
 	if TYPE == "payphone" then
-		local instance = factory.create(URL.FACTORY.PAYPHONE, obj.position)
+		local instance = collectionfactory.create(URL.FACTORY.PAYPHONE, obj.position)
 		PAYPHONES[#PAYPHONES+1] = instance
 
-		go.animate(instance[ID.ARROW], ID.POSITION.Y, go.PLAYBACK_LOOP_PINGPONG, -60, go.EASING_INOUTSINE, 2)
+		go.animate(instance[ID.ARROW], ID.POSITION.Y, go.PLAYBACK_LOOP_PINGPONG, -38, go.EASING_INOUTSINE, 2)
 	elseif TYPE == "target_ptr" then
 		local instance = factory.create(URL.FACTORY.TARGET_PTR, obj.position)
 		TARGET_PTRS[#TARGET_PTRS+1] = instance

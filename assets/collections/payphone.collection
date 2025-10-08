@@ -1,0 +1,19 @@
+name: "payphone"
+instances {
+  id: "payphone"
+  prototype: "/assets/go/payphone.go"
+  children: "arrow"
+}
+instances {
+  id: "arrow"
+  prototype: "/assets/go/arrow.go"
+  position {
+    y: -64.0
+    z: 3.0
+  }
+  scale3 {
+    x: 0.5
+    y: 0.5
+  }
+}
+scale_along_z: 0

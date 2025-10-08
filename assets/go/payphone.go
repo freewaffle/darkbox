@@ -18,15 +18,3 @@ components {
   id: "shadow"
   component: "/assets/sprites/sphere_shadow.sprite"
 }
-components {
-  id: "arrow"
-  component: "/assets/sprites/arrow.sprite"
-  position {
-    y: -38.0
-    z: 2.0
-  }
-  scale {
-    x: 0.5
-    y: 0.5
-  }
-}
