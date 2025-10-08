@@ -49,9 +49,6 @@ max_tile_count = 4096
 [script]
 shared_state = 1
 
-[sound]
-gain = 0.0
-
 [profiler]
 enabled = 0
 
