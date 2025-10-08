@@ -39,6 +39,7 @@ opengl_version_hint = 46
 
 [liveupdate]
 mount_on_start = 0
+enabled = 0
 
 [native_extension]
 app_manifest = /manifest.appmanifest
