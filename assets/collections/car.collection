@@ -1,6 +1,0 @@
-name: "car"
-instances {
-  id: "car"
-  prototype: "/assets/go/car.go"
-}
-scale_along_z: 0
