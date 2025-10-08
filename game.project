@@ -1,7 +1,7 @@
 [project]
 title = Darkbox
 version = 0.1
-developer = kandelasky
+developer = freewaffle
 compress_archive = 0
 
 [bootstrap]
