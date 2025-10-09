@@ -209,7 +209,7 @@ function init(self)
 	}
 
 	self.speed = {
-		fast = 450,
+		fast = 650,
 		slow = 450 * 0.5, --> 225
 		accurate = 100,
 	}
