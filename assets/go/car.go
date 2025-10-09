@@ -4,7 +4,7 @@ components {
 }
 components {
   id: "collision"
-  component: "/assets/collision_objects/car.collisionobject"
+  component: "/assets/collision_objects/car/collision.collisionobject"
 }
 embedded_components {
   id: "sprite"
