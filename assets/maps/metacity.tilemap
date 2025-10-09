@@ -5449,7 +5449,10 @@ layers {
   cell {
     x: 9
     y: 19
-    tile: 0
+    tile: 19
+    h_flip: 1
+    v_flip: 1
+    rotate90: 1
   }
   cell {
     x: 10
@@ -5609,7 +5612,7 @@ layers {
   cell {
     x: 41
     y: 19
-    tile: 0
+    tile: 19
   }
   cell {
     x: 42
@@ -8275,7 +8278,7 @@ layers {
   cell {
     x: 41
     y: 28
-    tile: 0
+    tile: 19
   }
   cell {
     x: 42
