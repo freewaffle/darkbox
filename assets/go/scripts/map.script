@@ -118,7 +118,8 @@ local function load_map(name)
 				end
 			end
 
-			local chance = math.floor(#navtiles / 10) / #navtiles
+			local density = 0.05
+			local chance = math.floor(#navtiles * density) / #navtiles
 			
 			for _, navtile in ipairs(navtiles) do
 				if randbool(chance) then
@@ -126,7 +127,7 @@ local function load_map(name)
 				end
 			end
 
-			print(string.format("navtiles: %d; cars: %d", #navtiles, car_index))
+			print(string.format("navtiles: %d; cars: %d; chance: %f", #navtiles, car_index, chance))
 		end
 	end collectgarbage()
 
