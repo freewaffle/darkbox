@@ -25,6 +25,10 @@ local ID = {
 	}
 }
 
+local MSG = {
+	TRIG_RESP = hash("trigger_response"),
+}
+
 local TILESIZE = 128
 
 local TILE = {
@@ -270,4 +274,12 @@ function update(self, dt)
 	end
 
 	collectgarbage()
+end
+
+function on_message(self, message_id, message)
+	if message_id == MSG.TRIG_RESP then
+		if message.own_group == hash("danger") then
+			log(self, "danger")
+		end
+	end
 end

@@ -5,6 +5,7 @@ restitution: 1.0
 group: "dynamic"
 mask: "static"
 mask: "dynamic"
+mask: "danger"
 embedded_collision_shape {
   shapes {
     shape_type: TYPE_BOX

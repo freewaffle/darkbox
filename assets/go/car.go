@@ -6,6 +6,10 @@ components {
   id: "collision"
   component: "/assets/collision_objects/car/collision.collisionobject"
 }
+components {
+  id: "danger"
+  component: "/assets/collision_objects/car/danger.collisionobject"
+}
 embedded_components {
   id: "sprite"
   type: "sprite"
