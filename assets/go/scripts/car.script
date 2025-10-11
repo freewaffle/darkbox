@@ -204,6 +204,8 @@ function init(self)
 		y = 0,
 	}
 
+	self.danger = 0
+
 	self.props = {
 		max_speed = 650, -- в пикселях/сек
 		acceleration_time = 2, -- в секундах
@@ -274,4 +276,18 @@ function update(self, dt)
 	end
 
 	collectgarbage()
+end
+
+function on_message(self, message_id, message)
+	if message_id == MSG.TRIG_RESP then
+		if message.own_group == hash("danger") then
+			if message.enter then
+				self.danger = self.danger + 1
+			else
+				self.danger = self.danger - 1
+			end
+			
+			log(self, "danger " .. self.danger)
+		end
+	end
 end
