@@ -275,11 +275,3 @@ function update(self, dt)
 
 	collectgarbage()
 end
-
-function on_message(self, message_id, message)
-	if message_id == MSG.TRIG_RESP then
-		if message.own_group == hash("danger") then
-			log(self, "danger")
-		end
-	end
-end
