@@ -21,7 +21,7 @@ local ID = {
 	TILEMAP = {
 		THIS = msg.url("game:/map#tilemap"),
 		GROUND = hash("ground"),
-		TRAFFIC = hash("traffic"),
+		TRAFFIC = hash("[traffic]"),
 	}
 }
 
@@ -176,10 +176,14 @@ local function tile_action(C)
 		stop(C)
 	end
 
-	if slow then
-		update_velocity(C, C.speed.slow)
+	if (C.danger or 0) > 0 then
+		update_velocity(C, 0)
 	else
-		update_velocity(C, C.speed.fast)
+		if slow then
+			update_velocity(C, C.speed.slow)
+		else
+			update_velocity(C, C.speed.fast)
+		end
 	end
 
 	C.time.rotation = 0
@@ -238,7 +242,7 @@ function update(self, dt)
 		local current_angle = go.get_rotation()
 		local smoothness = 0.3
 		local rotation_time = math.min(self.time.rotation / self.props.rotation_time, 1)
-		current_angle = vmath.slerp(smoothness * rotation_time, current_angle, target_angle)
+		current_angle = vmath.slerp((smoothness * rotation_time) * (self.velocity / self.props.max_speed), current_angle, target_angle)
 		
 		go.set_rotation(current_angle)
 
@@ -248,7 +252,6 @@ function update(self, dt)
 			if self.props.traffic_mode then
 				tile_action(self)
 			else
-				-- not implemented
 				stop(self)
 			end
 		end
@@ -284,7 +287,7 @@ function on_message(self, message_id, message)
 			if message.enter then
 				self.danger = self.danger + 1
 			else
-				self.danger = self.danger - 1
+				self.danger = math.max(self.danger - 1, 0)
 			end
 			
 			log(self, "danger " .. self.danger)
