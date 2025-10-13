@@ -22745,4 +22745,8 @@ layers {
     tile: 11
   }
 }
+layers {
+  id: "[carspawns]"
+  z: 1.0
+}
 material: "/builtins/materials/tile_map.material"
