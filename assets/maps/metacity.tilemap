@@ -14381,7 +14381,7 @@ layers {
   z: 0.1
 }
 layers {
-  id: "peds"
+  id: "[peds]"
   z: 1.0
   is_visible: 0
   cell {
@@ -18866,7 +18866,7 @@ layers {
   }
 }
 layers {
-  id: "traffic"
+  id: "[traffic]"
   z: 1.0
   is_visible: 0
   cell {
