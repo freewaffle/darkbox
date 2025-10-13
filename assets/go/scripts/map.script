@@ -32,6 +32,10 @@ local FACTORY = {
 	CAR = msg.url("game:/factory#car")
 }
 
+local FLAGS = {
+	MAKE_TRAFFIC = false
+}
+
 local function randbool(chance)
 	return math.random() <= (chance)
 end
@@ -99,12 +103,30 @@ local function load_map(name)
 			msg.post(URL.MCTL, MSG.SET_PAYPHONES, payphones)
 		end
 
-		-- создание трафика
 		do
+			local SPAWNER = {
+				CAR = 23
+			}
+			
+			local x, y, w, h = tilemap.get_bounds("#tilemap")
+			local tiles = tilemap.get_tiles("#tilemap", "[carspawns]")
+			for row = y, y + h - 1 do
+				for column = x, x + w - 1 do
+					local tile = tiles[row][column]
+
+					if tile == SPAWNER.CAR then
+						create_car(column, row)
+					end
+				end
+			end
+		end
+
+		-- создание трафика
+		if FLAGS.MAKE_TRAFFIC then
 			local navtiles = {}
 			
 			local x, y, w, h = tilemap.get_bounds("#tilemap")
-			local tiles = tilemap.get_tiles("#tilemap", "traffic")
+			local tiles = tilemap.get_tiles("#tilemap", "[traffic]")
 			for row = y, y + h - 1 do
 				for column = x, x + w - 1 do
 					local tile = tiles[row][column]
