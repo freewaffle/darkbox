@@ -155,7 +155,7 @@ end
 function init(self)
 	load_map("metacity", {
 		make_traffic = true,
-		density = 0.05
+		density = 0.025
 	})
 end
 
