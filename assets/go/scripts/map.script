@@ -118,7 +118,7 @@ local function load_map(name, flags)
 		end
 
 		-- создание трафика
-		if flags.MAKE_TRAFFIC then
+		if flags.make_traffic then
 			local navtiles = {}
 			
 			local x, y, w, h = tilemap.get_bounds("#tilemap")
@@ -136,7 +136,7 @@ local function load_map(name, flags)
 				end
 			end
 
-			local density = 0.05
+			local density = flags.density
 			local chance = math.floor(#navtiles * density) / #navtiles
 			
 			for _, navtile in ipairs(navtiles) do
@@ -154,7 +154,8 @@ end
 
 function init(self)
 	load_map("metacity", {
-		MAKE_TRAFFIC = true
+		make_traffic = true,
+		density = 0.05
 	})
 end
 
