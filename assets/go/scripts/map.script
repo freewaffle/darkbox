@@ -32,10 +32,6 @@ local FACTORY = {
 	CAR = msg.url("game:/factory#car")
 }
 
-local FLAGS = {
-	MAKE_TRAFFIC = false
-}
-
 local function randbool(chance)
 	return math.random() <= (chance)
 end
@@ -50,7 +46,7 @@ local function create_car(tx, ty)
 	car_index = car_index + 1
 end
 
-local function load_map(name)
+local function load_map(name, flags)
 	print("loading map: " .. name)
 
 	do
@@ -122,7 +118,7 @@ local function load_map(name)
 		end
 
 		-- создание трафика
-		if FLAGS.MAKE_TRAFFIC then
+		if flags.MAKE_TRAFFIC then
 			local navtiles = {}
 			
 			local x, y, w, h = tilemap.get_bounds("#tilemap")
@@ -157,7 +153,9 @@ local function load_map(name)
 end
 
 function init(self)
-	load_map("metacity")
+	load_map("metacity", {
+		MAKE_TRAFFIC = true
+	})
 end
 
 function on_message(self, message_id, message)
