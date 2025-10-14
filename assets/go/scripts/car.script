@@ -48,6 +48,9 @@ local TILE = {
 	},
 }
 
+go.property("index", 0)
+go.property("traffic", false)
+
 local function get_tile(layer, tx, ty)
 	return tilemap.get_tile(ID.TILEMAP.THIS, layer, tx, ty)
 end
@@ -85,7 +88,7 @@ local function stop(C)
 end
 
 local function tile_action(C)
-	if not C.target_tile and C.props.traffic_mode then
+	if not C.target_tile and C.traffic then
 		log(C, "redefined target_tile")
 		local tx, ty = get_tile_pos()
 		C.target_tile = {
@@ -167,29 +170,23 @@ local function tile_action(C)
 		}
 		slow = true
 	elseif tile == TILE.NAV.STOP then
-		C.props.traffic_mode = false
+		C.traffic = false
 		stop(C)
 		log(C, "stopped")
 	else
 		log(C, "PANIC: not a navigation tile!")
-		C.props.traffic_mode = false
+		C.traffic = false
 		stop(C)
 	end
 
-	if (C.danger or 0) > 0 then
-		update_velocity(C, 0)
+	if slow then
+		update_velocity(C, C.speed.slow)
 	else
-		if slow then
-			update_velocity(C, C.speed.slow)
-		else
-			update_velocity(C, C.speed.fast)
-		end
+		update_velocity(C, C.speed.fast)
 	end
 
 	C.time.rotation = 0
 end
-
-go.property("index", 0)
 
 function init(self)
 	self.time = {
@@ -215,7 +212,6 @@ function init(self)
 		acceleration_time = 2, -- в секундах
 		rotation_time = 1, -- в секундах
 		brake_time = 0.5, -- в секундах
-		traffic_mode = true
 	}
 
 	self.speed = {
@@ -249,14 +245,14 @@ function update(self, dt)
 		local tile_x, tile_y = get_tile_pos()
 		local target_x, target_y = self.target_tile.x, self.target_tile.y
 		if tile_x == target_x and tile_y == target_y then
-			if self.props.traffic_mode then
+			if self.traffic then
 				tile_action(self)
 			else
 				stop(self)
 			end
 		end
 	else
-		if self.props.traffic_mode then
+		if self.traffic then
 			tile_action(self)
 		elseif self.target_velocity ~= 0 then
 			update_velocity(self, 0)
@@ -271,7 +267,11 @@ function update(self, dt)
 			time = self.props.brake_time
 		end
 		time = math.min(self.time.acceleration / time, 1)
-		self.velocity = vmath.lerp(time, self.prev_velocity, self.target_velocity)
+		local target_vel = self.target_velocity
+		if (self.danger or 0) > 0 then
+			target_vel = 0
+		end
+		self.velocity = vmath.lerp(time, self.prev_velocity, target_vel)
 	end
 
 	if math.floor(self.velocity) ~= 0 then

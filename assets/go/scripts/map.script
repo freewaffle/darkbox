@@ -38,11 +38,14 @@ end
 
 local car_index = 0
 
-local function create_car(tx, ty)
+local function create_car(tx, ty, traffic)
 	local pos; if tx and ty then
 		pos = vmath.vector3(128 * tx - 64, 128 * ty - 64, 1.5)
 	end
-	factory.create(FACTORY.CAR, pos, nil, { index = car_index })
+	factory.create(FACTORY.CAR, pos, nil, {
+		index = car_index,
+		traffic = traffic
+	})
 	car_index = car_index + 1
 end
 
@@ -111,7 +114,7 @@ local function load_map(name, flags)
 					local tile = tiles[row][column]
 
 					if tile == SPAWNER.CAR then
-						create_car(column, row)
+						create_car(column, row, false)
 					end
 				end
 			end
@@ -141,7 +144,7 @@ local function load_map(name, flags)
 			
 			for _, navtile in ipairs(navtiles) do
 				if randbool(chance) then
-					create_car(navtile.x, navtile.y)
+					create_car(navtile.x, navtile.y, true)
 				end
 			end
 
