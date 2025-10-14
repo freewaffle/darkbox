@@ -247,6 +247,14 @@ function update(self, dt)
 			self.instant_rotate = false
 		else
 			current_angle = vmath.slerp((smoothness * rotation_time) * (self.velocity / self.props.max_speed), current_angle, target_angle)
+
+			-- local _, _, z2 = vmath.quat_to_euler(target_angle)
+			-- local _, _, z1 = vmath.quat_to_euler(current_angle)
+			-- 
+			-- z2 = z2 * smoothness
+			-- z2 = math.max(math.min(limit, z2), -limit)
+			-- 
+			-- current_angle = vmath.quat_rotation_z(z1 + z2)
 		end
 		
 		go.set_rotation(current_angle)
