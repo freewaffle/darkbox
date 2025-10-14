@@ -352,7 +352,7 @@ local ms = {
 local function try(fn, arg)
 	if type(fn) == "function" then
 		local handler = function (msg)
-			print(string.format("ERROR:%d: %s", progress, msg))
+			print(string.format("mission: ERROR:%d: %s", progress, msg))
 			msg.post("@system:", "exit", {code = 1})
 		end
 
@@ -404,7 +404,7 @@ function update(self, dt)
 
 	if next_mission() == nil then
 		if not disabled then
-			print("no next script found")
+			print("mission: no next script found")
 			m_toggle_payphones(false)
 			disabled = true
 		end
@@ -441,7 +441,7 @@ function on_message(self, message_id, message, sender)
 				end
 			end
 		else
-			print("force activating mission since `payphone_id` is not present")
+			print("mission: force activate mission since `payphone_id` is not present")
 			activate = true
 		end
 		
@@ -450,10 +450,10 @@ function on_message(self, message_id, message, sender)
 			start_next_mission()
 		end
 	elseif message_id == MSG.SET_PAYPHONES then
+		print("mission: update payphones list")
 		PAYPHONES = {}
 		for i,p in ipairs(message) do
 			PAYPHONES[i] = p
 		end
-		print("updated payphones list")
 	end
 end

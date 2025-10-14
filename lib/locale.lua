@@ -18,7 +18,7 @@ Darkbox распространяется в надежде, что она буд
 ]]
 
 local function init()
-	print("locale service started")
+	print("locale: started")
 	
 	local txt
 	do

@@ -73,7 +73,7 @@ end
 --------------------------------------------------------------------------------
 
 local function log(C, msg)
-	print(string.format("car %d: %s", assert(C.index), msg))
+	print(string.format("car %d:\t\t%s", assert(C.index), msg))
 end
 
 local function update_velocity(C, vel)
