@@ -194,6 +194,9 @@ function init(self)
 		rotation = 0,
 	}
 
+	self.instant_rotate = true
+	self.instant_acceleration = true
+
 	self.target_tile = nil
 	--[[ {
 		x = 8,
@@ -238,7 +241,13 @@ function update(self, dt)
 		local current_angle = go.get_rotation()
 		local smoothness = 0.3
 		local rotation_time = math.min(self.time.rotation / self.props.rotation_time, 1)
-		current_angle = vmath.slerp((smoothness * rotation_time) * (self.velocity / self.props.max_speed), current_angle, target_angle)
+
+		if self.instant_rotate then
+			current_angle = target_angle
+			self.instant_rotate = false
+		else
+			current_angle = vmath.slerp((smoothness * rotation_time) * (self.velocity / self.props.max_speed), current_angle, target_angle)
+		end
 		
 		go.set_rotation(current_angle)
 
@@ -266,11 +275,18 @@ function update(self, dt)
 		else
 			time = self.props.brake_time
 		end
+		
 		time = math.min(self.time.acceleration / time, 1)
+		if self.instant_acceleration then
+			time = 1
+			self.instant_acceleration = false
+		end
+		
 		local target_vel = self.target_velocity
 		if (self.danger or 0) > 0 then
 			target_vel = 0
 		end
+		
 		self.velocity = vmath.lerp(time, self.prev_velocity, target_vel)
 	end
 
