@@ -315,6 +315,8 @@ function on_message(self, message_id, message)
 			end
 			
 			log(self, "danger " .. self.danger)
+
+			self.time.acceleration = 0
 		end
 	end
 end
