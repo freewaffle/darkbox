@@ -89,7 +89,7 @@ end
 
 local function tile_action(C)
 	if not C.target_tile and C.traffic then
-		log(C, "redefined target_tile")
+		log(C, "redefine target_tile")
 		local tx, ty = get_tile_pos()
 		C.target_tile = {
 			x = tx,
@@ -170,9 +170,9 @@ local function tile_action(C)
 		}
 		slow = true
 	elseif tile == TILE.NAV.STOP then
+		log(C, "stop")
 		C.traffic = false
 		stop(C)
-		log(C, "stopped")
 	else
 		log(C, "PANIC: not a navigation tile!")
 		C.traffic = false
