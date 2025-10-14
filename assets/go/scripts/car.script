@@ -214,7 +214,7 @@ function init(self)
 		max_speed = 650, -- в пикселях/сек
 		acceleration_time = 2, -- в секундах
 		rotation_time = 1, -- в секундах
-		brake_time = 0.5, -- в секундах
+		brake_time = 0.35, -- в секундах
 	}
 
 	self.speed = {
