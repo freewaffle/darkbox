@@ -8,7 +8,7 @@ embedded_collision_shape {
   shapes {
     shape_type: TYPE_BOX
     position {
-      y: 128.0
+      y: 153.6
     }
     rotation {
     }
@@ -17,7 +17,7 @@ embedded_collision_shape {
     id: "front"
   }
   data: 64.0
-  data: 64.0
+  data: 96.0
   data: 10.0
 }
 locked_rotation: true
