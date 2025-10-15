@@ -38,15 +38,16 @@ end
 
 local car_index = 0
 
-local function create_car(tx, ty, traffic, tag)
+local function create_car(tx, ty, props, tag)
+	print(string.format("create_car: create car: index %d, TX %d, TY %d, tag: %s", car_index, tx, ty, tag))
+	
 	local pos; if tx and ty then
 		pos = vmath.vector3(128 * tx - 64, 128 * ty - 64, 1.5)
 	end
-	factory.create(FACTORY.CAR, pos, nil, {
-		index = car_index,
-		traffic = traffic
-	})
-	print(string.format("create_car: create car: index %d, TX %d, TY %d, tag: %s", car_index, tx, ty, tag))
+	props.index = car_index
+	
+	factory.create(FACTORY.CAR, pos, nil, props)
+	
 	car_index = car_index + 1
 end
 
@@ -116,6 +117,10 @@ local function load_map(name, flags)
 			local SPAWNER = {
 				CAR = 23
 			}
+
+			local PROPS = {
+				ai = false,
+			}
 			
 			local x, y, w, h = tilemap.get_bounds("#tilemap")
 			local tiles = tilemap.get_tiles("#tilemap", "[carspawns]")
@@ -124,7 +129,7 @@ local function load_map(name, flags)
 					local tile = tiles[row][column]
 
 					if tile == SPAWNER.CAR then
-						create_car(column, row, false, "SPAWNER")
+						create_car(column, row, PROPS, "SPAWNER")
 					end
 				end
 			end
@@ -155,10 +160,15 @@ local function load_map(name, flags)
 
 			local density = flags.density
 			local chance = math.floor(#navtiles * density) / #navtiles
+
+			local PROPS = {
+				ai = true,
+				traffic = true,
+			}
 			
 			for _, navtile in ipairs(navtiles) do
 				if randbool(chance) then
-					create_car(navtile.x, navtile.y, true, "TRAFFIC")
+					create_car(navtile.x, navtile.y, PROPS, "TRAFFIC")
 				end
 			end
 
