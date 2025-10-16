@@ -332,7 +332,7 @@ function on_message(self, message_id, message)
 				self.danger = math.max(self.danger - 1, 0)
 			end
 			
-			log(self, "danger " .. self.danger)
+			-- log(self, "danger " .. self.danger)
 		end
 	end
 end
