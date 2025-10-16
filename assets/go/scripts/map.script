@@ -210,8 +210,22 @@ function init(self)
 	})
 end
 
-function on_message(self, message_id, message)
+function on_message(self, message_id, message, sender)
 	if message_id == MSG.LOAD_MAP then
 		load_map(assert(message.name, error("expected field `name`", 2)))
+	elseif message_id == MSG.ASK_ENTER_VEHICLE then
+		print("map: sender ",sender," asked to enter a vehicle")
+		
+		local spos, range = message.position, message.range
+
+		print("map: scan cars")
+		for i, CAR in ipairs(CARS) do
+			local carpos = go.get_position(CAR)
+			local magic = (math.abs(carpos.x - spos.x) + math.abs(carpos.y - spos.y)) / 2
+			if magic <= range then
+				print("map: found a car nearby! id: ", CAR)
+			end
+		end
+		print("map: end scan cars")
 	end
 end
