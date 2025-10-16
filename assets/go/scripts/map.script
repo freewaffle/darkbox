@@ -23,7 +23,8 @@ local URL = {
 
 local MSG = {
 	LOAD_MAP = hash("load_map"),
-	SET_PAYPHONES = hash("set_payphones")
+	SET_PAYPHONES = hash("set_payphones"),
+	ASK_ENTER_VEHICLE = hash("ask_enter_vehicle")
 }
 
 local FACTORY = {
@@ -38,24 +39,24 @@ local TILEMAP = {
 	TRAFFIC = hash("[traffic]"),
 }
 
+local CARS = {}
+
 local function randbool(chance)
 	return math.random() <= (chance)
 end
 
-local car_index = 0
-
-local function create_car(tx, ty, props, tag, rotation)
-	print(string.format("create_car: create car: index %d, TX %d, TY %d, tag: %s", car_index, tx, ty, tag))
+local function create_car(tx, ty, props, rotation)
+	print(string.format("create_car: create car: index %d, TX %d, TY %d", #CARS, tx, ty))
 	
 	local pos; if tx and ty then
 		pos = vmath.vector3(128 * tx - 64, 128 * ty - 64, 1.5)
 	end
-	props.index = car_index
+	props.index = #CARS
 	
-	local car = factory.create(FACTORY.CAR, pos, nil, props)
-	go.set_rotation(rotation or vmath.quat(), car)
+	local CAR = factory.create(FACTORY.CAR, pos, nil, props)
+	CARS[#CARS+1] = CAR
 	
-	car_index = car_index + 1
+	go.set_rotation(rotation or vmath.quat(), CAR)
 end
 
 local function load_map(name, flags)
@@ -63,6 +64,13 @@ local function load_map(name, flags)
 	pprint(flags)
 
 	do
+		do
+			print("map: cleanup")
+			go.delete(CARS, true)
+			-- go.delete(..., true)
+			print("map: finished cleanup")
+		end
+		
 		-- создание фабричных объектов
 		do
 			print("map: create fabric objects")
@@ -144,7 +152,7 @@ local function load_map(name, flags)
 						if tile.v_flip then z = z - 90 end
 						if tile.rotate_90 then z = z - 90 end
 						
-						create_car(column, row, PROPS, "SPAWNER", vmath.euler_to_quat(0, 0, z))
+						create_car(column, row, PROPS, vmath.euler_to_quat(0, 0, z))
 					end
 				end
 			end
@@ -183,11 +191,11 @@ local function load_map(name, flags)
 			
 			for _, navtile in ipairs(navtiles) do
 				if randbool(chance) then
-					create_car(navtile.x, navtile.y, PROPS, "TRAFFIC")
+					create_car(navtile.x, navtile.y, PROPS)
 				end
 			end
 
-			print(string.format("map: navtiles stats: total %d; cars: %d; chance: %f", #navtiles, car_index, chance))
+			print(string.format("map: navtiles stats: total %d; cars: %d; chance: %f", #navtiles, #CARS, chance))
 			print("map: finished make traffic")
 		end
 	end collectgarbage()
