@@ -32,13 +32,19 @@ local FACTORY = {
 	CAR = msg.url("game:/factory#car")
 }
 
+local TILEMAP = {
+	URL = msg.url("game:/map#tilemap"),
+	CARSPAWNS = hash("[carspawns]"),
+	TRAFFIC = hash("[traffic]"),
+}
+
 local function randbool(chance)
 	return math.random() <= (chance)
 end
 
 local car_index = 0
 
-local function create_car(tx, ty, props, tag)
+local function create_car(tx, ty, props, tag, rotation)
 	print(string.format("create_car: create car: index %d, TX %d, TY %d, tag: %s", car_index, tx, ty, tag))
 	
 	local pos; if tx and ty then
@@ -46,7 +52,8 @@ local function create_car(tx, ty, props, tag)
 	end
 	props.index = car_index
 	
-	factory.create(FACTORY.CAR, pos, nil, props)
+	local car = factory.create(FACTORY.CAR, pos, nil, props)
+	go.set_rotation(rotation or vmath.quat(), car)
 	
 	car_index = car_index + 1
 end
@@ -122,14 +129,22 @@ local function load_map(name, flags)
 				ai = false,
 			}
 			
-			local x, y, w, h = tilemap.get_bounds("#tilemap")
-			local tiles = tilemap.get_tiles("#tilemap", "[carspawns]")
+			local x, y, w, h = tilemap.get_bounds(TILEMAP.URL)
+			tilemap.set_visible(TILEMAP.URL, TILEMAP.CARSPAWNS, false)
+			--local tiles = tilemap.get_tiles(TILEMAP.URL, TILEMAP.CARSPAWNS)
 			for row = y, y + h - 1 do
 				for column = x, x + w - 1 do
-					local tile = tiles[row][column]
+					local tile = assert(tilemap.get_tile_info(TILEMAP.URL, TILEMAP.CARSPAWNS, column, row), "empty tile info!")
+					local index = tile.index
 
-					if tile == SPAWNER.CAR then
-						create_car(column, row, PROPS, "SPAWNER")
+					if index == SPAWNER.CAR then
+						local z = 0
+
+						if tile.h_flip then z = z - 90 end
+						if tile.v_flip then z = z - 90 end
+						if tile.rotate_90 then z = z - 90 end
+						
+						create_car(column, row, PROPS, "SPAWNER", vmath.euler_to_quat(0, 0, z))
 					end
 				end
 			end
@@ -143,8 +158,8 @@ local function load_map(name, flags)
 			
 			local navtiles = {}
 			
-			local x, y, w, h = tilemap.get_bounds("#tilemap")
-			local tiles = tilemap.get_tiles("#tilemap", "[traffic]")
+			local x, y, w, h = tilemap.get_bounds(TILEMAP.URL)
+			local tiles = tilemap.get_tiles(TILEMAP.URL, TILEMAP.TRAFFIC)
 			for row = y, y + h - 1 do
 				for column = x, x + w - 1 do
 					local tile = tiles[row][column]
