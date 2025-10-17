@@ -17,6 +17,10 @@ Darkbox распространяется в надежде, что она буд
 <https://www.gnu.org/licenses/>.
 ]]
 
+local ID = {
+	AI = hash("ai")
+}
+
 local URL = {
 	MCTL = msg.url("game:/player#mission"),
 }
@@ -24,7 +28,9 @@ local URL = {
 local MSG = {
 	LOAD_MAP = hash("load_map"),
 	SET_PAYPHONES = hash("set_payphones"),
-	ASK_ENTER_VEHICLE = hash("ask_enter_vehicle")
+	ASK_ENTER_VEHICLE = hash("ask_enter_vehicle"),
+	ENTERED_VEHICLE_ID = hash("entered_vehicle_id"),
+	SET_PROPS = hash("set_props")
 }
 
 local FACTORY = {
@@ -222,8 +228,12 @@ function on_message(self, message_id, message, sender)
 		for i, CAR in ipairs(CARS) do
 			local carpos = go.get_position(CAR)
 			local magic = (math.abs(carpos.x - spos.x) + math.abs(carpos.y - spos.y)) / 2
+			
 			if magic <= range then
-				print("map: found a car nearby! id: ", CAR)
+				print("map: found a car nearby: ", CAR)
+				
+				msg.post(CAR, MSG.SET_PROPS, { ai = false })
+				msg.post(sender, MSG.ENTERED_VEHICLE_ID, { CAR })
 			end
 		end
 		print("map: end scan cars")

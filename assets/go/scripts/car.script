@@ -27,6 +27,7 @@ local ID = {
 
 local MSG = {
 	TRIG_RESP = hash("trigger_response"),
+	SET_PROPS = hash("set_props")
 }
 
 local TILESIZE = 128
@@ -294,6 +295,8 @@ function update(self, DT)
 		if self.danger > 0 then
 			self.accel = 0
 		end
+	else
+		self.accel = 0
 	end
 
 	if self.accel then
@@ -306,14 +309,18 @@ function update(self, DT)
 		elseif self.accel == -1 then -- reverse
 			self.velocity = self.velocity - pps
 		end
-	else
+	elseif self.velocity ~= 0 then
 		local resistance = self.props.resistance
-		if self.velocity < 0 then
-			resistance = -self.props.resistance
+		if math.abs(self.velocity) <= resistance then
+			self.velocity = 0
+		else
+			if self.velocity < 0 then
+				resistance = -resistance
+			end
+			self.velocity = self.velocity - (resistance * DT)
 		end
-		self.velocity = self.velocity - (resistance * DT)
 	end
-	
+
 	self.velocity = math.max(math.min(self.props.max_speed, self.velocity), -self.props.max_speed)
 
 	if math.floor(self.velocity) ~= 0 then
@@ -333,6 +340,11 @@ function on_message(self, message_id, message)
 			end
 			
 			-- log(self, "danger " .. self.danger)
+		end
+	elseif message_id == MSG.SET_PROPS then
+		for key, value in pairs(message) do
+			print("car: set prop: [", key, "] = [", value, "]")
+			self[key] = value
 		end
 	end
 end

@@ -34,6 +34,7 @@ local MSG = {
 	TRIG_RESP = hash("trigger_response"),
 	ACTIVATE_MISSION = hash("activate_mission"),
 	ASK_ENTER_VEHICLE = hash("ask_enter_vehicle"),
+	ENTERED_VEHICLE_ID = hash("entered_vehicle_id"),
 }
 
 local ID = {
@@ -42,6 +43,7 @@ local ID = {
 	THIS = msg.url("game:/player"),
 	THIS_SCRIPT = msg.url("game:/player#script"),
 	SPRITE = msg.url("game:/player#sprite"),
+	SHADOW = msg.url("game:/player#shadow"),
 
 	-- animations:
 
@@ -96,31 +98,27 @@ local CONST = {
 
 local hp = CONST.MAX_HP
 local dead = hp <= 0
+
 local angle = vmath.quat()
 
--- local function move_camera(lerp)
--- 	local command = "update_pos"
--- 	if lerp then
--- 		command = "lerp_pos"
--- 	end
--- 	msg.post("/camera#script", command, { go.get_position() })
--- end
+local in_vehicle = nil
+
+local function show_me(show)
+	if show then
+		msg.post(ID.SPRITE, MSG.ENABLE)
+		msg.post(ID.SHADOW, MSG.ENABLE)
+	else
+		sprite.play_flipbook(ID.SPRITE, ID.ANIM.PLAYER_STAND)
+		msg.post(ID.SPRITE, MSG.DISABLE)
+		msg.post(ID.SHADOW, MSG.DISABLE)
+	end
+end
 
 local function rotate_to_pos(target_position)
 	-- FIXME: анимация свойства "rotation" вызывает ошибку
 	-- go.animate("#sprite", "rotation", go.PLAYBACK_ONCE_FORWARD, to, go.EASING_OUTCUBIC, 0.5)
 	angle = vmath.quat_rotation_z(math.atan2(target_position.x, -target_position.y))
 	go.set_rotation(angle)
-end
-
-local function hp_trigger()
-	dead = hp <= 0
-	if not dead then
-		msg.post(ID.SPRITE, MSG.ENABLE)
-	else
-		sprite.play_flipbook(ID.SPRITE, ID.ANIM.PLAYER_STAND)
-		msg.post(ID.SPRITE, MSG.DISABLE)
-	end
 end
 
 local function set_hp(to)
@@ -133,7 +131,6 @@ local function set_hp(to)
 	hp = to
 
 	msg.post(ID.HUD, MSG.UPDATE_HP, {to})
-	hp_trigger()
 end
 
 local function get_current_tile(layer, pos)
@@ -201,10 +198,9 @@ function init(self)
 end
 
 function update(self, dt)
-	local special_url = nil--msg.url("game:/car")
 	local pos = go.get_position()
 	
-	if self.velocity.x ~= 0 or self.velocity.y ~= 0 then
+	if self.velocity.x ~= 0 or self.velocity.y ~= 0 and not in_vehicle then
 		-- делает скорость при двунаправленном движении визуально симметричной
 		-- к скорости с одним направлением
 		if self.velocity.x ~= 0 and self.velocity.y ~= 0 then
@@ -228,15 +224,16 @@ function update(self, dt)
 		self.velocity = vmath.vector3()
 	end
 
-	if special_url then
-		move_camera(go.get_position(special_url), 0.5, go.EASING_OUTCUBIC)
-	else
-		move_camera(pos, 0.5, go.EASING_OUTCUBIC)
+	local camera_pos = pos
+	if in_vehicle then
+		camera_pos = go.get_position(in_vehicle)
 	end
+	move_camera(camera_pos, 0.5, go.EASING_OUTCUBIC)
+
+	dead = hp <= 0
+	show_me(not (dead or in_vehicle))
 	
 	collectgarbage()
-
-	--hp_trigger()
 end
 
 function on_message(self, message_id, message, sender)
@@ -244,6 +241,8 @@ function on_message(self, message_id, message, sender)
 		if message.group == ID.GROUP.PAYPHONE and message.enter then
 			msg.post(ID.MCTL, MSG.ACTIVATE_MISSION, { payphone_id = message.other_id })
 		end
+	elseif message_id == MSG.ENTERED_VEHICLE_ID then
+		in_vehicle = assert(message[1], "no vehicle id!")
 	end
 end
 
@@ -265,11 +264,22 @@ function on_input(self, action_id, action)
 		self.velocity.x = CONST.MOVEMENT_SPEED
 		moved = true
 	elseif action_id == ACTION.ENTER_VEHICLE and action.pressed then
-		print("player: ask enter vehicle")
-		msg.post(ID.MAP_CTL, MSG.ASK_ENTER_VEHICLE, {
-			position = go.get_position(),
-			range = 128 -- в пикселях
-		})
+		if in_vehicle then
+			print("player: quit vehicle")
+
+			local vpos = go.get_position(in_vehicle)
+			local vrot = go.get_rotation(in_vehicle)
+			
+			go.set_position(vpos - vmath.rotate(vrot, vmath.vector3(128, 0, 0)))
+			
+			in_vehicle = nil
+		else
+			print("player: ask enter vehicle")
+			msg.post(ID.MAP_CTL, MSG.ASK_ENTER_VEHICLE, {
+				position = go.get_position(),
+				range = 128 -- в пикселях
+			})
+		end
 	elseif not action_id and action.x and action.y then
 		local w, h = window.get_size()
 		rotate_to_pos(vmath.vector3(w/2 - action.x, h/2 - action.y, 0))
@@ -281,7 +291,6 @@ function on_input(self, action_id, action)
 			sprite.play_flipbook(ID.SPRITE, ID.ANIM.PLAYER_MOVING)
 		elseif action.released then
 			sprite.play_flipbook(ID.SPRITE, ID.ANIM.PLAYER_STAND)
-			--move_camera(go.get_position())
 		end
 	end
 	
