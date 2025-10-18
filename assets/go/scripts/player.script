@@ -105,12 +105,10 @@ local in_vehicle = nil
 
 local function show_me(show)
 	if show then
-		msg.post(ID.SPRITE, MSG.ENABLE)
-		msg.post(ID.SHADOW, MSG.ENABLE)
+		msg.post(ID.THIS, MSG.ENABLE)
 	else
 		sprite.play_flipbook(ID.SPRITE, ID.ANIM.PLAYER_STAND)
-		msg.post(ID.SPRITE, MSG.DISABLE)
-		msg.post(ID.SHADOW, MSG.DISABLE)
+		msg.post(ID.THIS, MSG.DISABLE)
 	end
 end
 
