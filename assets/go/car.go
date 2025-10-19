@@ -22,3 +22,7 @@ components {
   id: "engine"
   component: "/assets/sounds/engine1.sound"
 }
+components {
+  id: "asphsound"
+  component: "/assets/sounds/asphmove.sound"
+}
