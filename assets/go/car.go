@@ -18,3 +18,7 @@ components {
     z: 1.5
   }
 }
+components {
+  id: "engine"
+  component: "/assets/sounds/engine1.sound"
+}

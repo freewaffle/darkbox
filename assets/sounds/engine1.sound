@@ -1,0 +1,3 @@
+sound: "/assets/raw/sounds/vehicle/porsche_engine.ogg"
+looping: 1
+group: "effects"

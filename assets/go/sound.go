@@ -26,3 +26,15 @@ components {
   id: "sp7"
   component: "/assets/sounds/sp/sp7.sound"
 }
+components {
+  id: "carhit1"
+  component: "/assets/sounds/carhit/carhit1.sound"
+}
+components {
+  id: "doorclose"
+  component: "/assets/sounds/doorclose.sound"
+}
+components {
+  id: "dooropen"
+  component: "/assets/sounds/dooropen.sound"
+}
