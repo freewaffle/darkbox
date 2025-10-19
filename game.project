@@ -52,3 +52,6 @@ shared_state = 1
 [profiler]
 enabled = 0
 
+[sound]
+max_component_count = 64
+
