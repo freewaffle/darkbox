@@ -1,0 +1,3 @@
+sound: "/assets/raw/sounds/vehicle/asphmove.ogg"
+looping: 1
+group: "effects"
