@@ -102,7 +102,6 @@ embedded_collision_shape {
   data: 24.0
   data: 24.0
 }
-locked_rotation: true
 event_collision: false
 event_contact: false
 event_trigger: false
