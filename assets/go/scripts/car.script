@@ -296,7 +296,7 @@ function update(self, DT)
 			self.accel = 0
 		end
 	else
-		self.accel = 0
+		self.accel = nil
 	end
 
 	if self.accel then
