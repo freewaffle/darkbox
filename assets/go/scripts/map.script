@@ -17,10 +17,6 @@ Darkbox распространяется в надежде, что она буд
 <https://www.gnu.org/licenses/>.
 ]]
 
-local ID = {
-	AI = hash("ai")
-}
-
 local URL = {
 	MCTL = msg.url("game:/player#mission"),
 }
@@ -193,6 +189,7 @@ local function load_map(name, flags)
 			local PROPS = {
 				ai = true,
 				traffic = true,
+				turned_on = true
 			}
 			
 			for _, navtile in ipairs(navtiles) do
@@ -220,7 +217,7 @@ function on_message(self, message_id, message, sender)
 	if message_id == MSG.LOAD_MAP then
 		load_map(assert(message.name, error("expected field `name`", 2)))
 	elseif message_id == MSG.ASK_ENTER_VEHICLE then
-		print("map: sender ",sender," asked to enter a vehicle")
+		print("map: sender [",sender,"] asked to enter a vehicle")
 		
 		local spos, range = message.position, message.range
 
@@ -232,8 +229,13 @@ function on_message(self, message_id, message, sender)
 			if magic <= range then
 				print("map: found a car nearby: ", CAR)
 				
-				msg.post(CAR, MSG.SET_PROPS, { ai = false })
+				msg.post(CAR, MSG.SET_PROPS, {
+					ai = false,
+					control = true
+				})
 				msg.post(sender, MSG.ENTERED_VEHICLE_ID, { CAR })
+				
+				break
 			end
 		end
 		print("map: end scan cars")
