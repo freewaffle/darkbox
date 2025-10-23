@@ -22,7 +22,15 @@ local ID = {
 		THIS = msg.url("game:/map#tilemap"),
 		GROUND = hash("ground"),
 		TRAFFIC = hash("[traffic]"),
-	}
+	},
+	
+	THIS = msg.url(),
+	ENGINESOUND = hash("#enginesound"),
+	ASPHSOUND = hash("#asphsound"),
+	CAMERA = msg.url("game:/camera#camera"),
+	
+	SPEED = hash("speed"),
+	DANGER = hash("danger")
 }
 
 local ACT = {
@@ -143,7 +151,7 @@ local function tile_action(self)
 			self.target_tile.x = self.target_tile.x + 1
 		elseif self.direction.x <= -1 then
 			self.target_tile.x = self.target_tile.x - 1
-			---------------------- Y ----------------------
+		---------------------- Y ----------------------
 		elseif self.direction.y >= 1 then
 			self.target_tile.y = self.target_tile.y + 1
 		elseif self.direction.y <= -1 then
@@ -187,7 +195,7 @@ local function tile_action(self)
 		self.traffic = false
 		stop(self)
 	else
-		log(self, "PANIC: not a navigation tile!")
+		log(self, "not a navigation tile!")
 		self.traffic = false
 		stop(self)
 	end
@@ -248,10 +256,10 @@ function init(self)
 	self.rotate = 0
 
 	self.engine_sound = nil
-	self.asph_sound = sound.play("#asphsound")
+	self.asph_sound = sound.play(ID.ASPHSOUND)
 
 	if self.turned_on then
-		self.engine_sound = sound.play("#engine")
+		self.engine_sound = sound.play(ID.ENGINESOUND)
 	end
 end
 
@@ -375,7 +383,7 @@ function update(self, DT)
 		go.set_position(go.get_position() + vmath.rotate(go.get_rotation(), (vmath.vector3(0, self.velocity, 0) * DT)))
 	end
 
-	local speed, inc, accel = go.get("#engine", "speed"), -0.01, (self.accel or 0)
+	local speed, inc, accel = go.get(ID.ENGINESOUND, ID.SPEED), -0.01, (self.accel or 0)
 
 	if accel == 1 and self.velocity >= 0 then
 		inc = 0.03
@@ -383,24 +391,24 @@ function update(self, DT)
 		inc = 0.03
 	end
 
-	go.set("#engine", "speed", vmath.clamp((speed + inc), 1.0, 2.5))
-	go.set("#asphsound", "speed", vmath.clamp(math.abs(self.velocity) / self.props.max_speed, 0, 1))
+	go.set(ID.ENGINESOUND, ID.SPEED, vmath.clamp((speed + inc), 1.0, 2.5))
+	go.set(ID.ASPHSOUND, ID.SPEED, vmath.clamp(math.abs(self.velocity) / self.props.max_speed, 0, 1))
 
-	local camera_pos = go.get_position("/camera#camera")
+	local camera_pos = go.get_position(ID.CAMERA)
 	local car_pos = go.get_position()
 	
 	local diff_x = math.abs(camera_pos.x - car_pos.x) / (128 * 4)
 	local diff_y = math.abs(camera_pos.y - car_pos.y) / (128 * 4)
 
-	sound.set_gain("#engine", vmath.clamp(1.0 - (diff_x + diff_y) / 2, 0.0, 1.0))
-	sound.set_gain("#asphsound", vmath.clamp(1.5 - (diff_x + diff_y) / 2, 0.0, 2.0))
+	sound.set_gain(ID.ENGINESOUND, vmath.clamp(1.0 - (diff_x + diff_y) / 2, 0.0, 1.0))
+	sound.set_gain(ID.ASPHSOUND, vmath.clamp(1.5 - (diff_x + diff_y) / 2, 0.0, 2.0))
 
 	collectgarbage()
 end
 
 function on_message(self, message_id, message)
 	if message_id == MSG.TRIG_RESP then
-		if message.own_group == hash("danger") then
+		if message.own_group == ID.DANGER then
 			if message.enter then
 				self.danger = self.danger + 1
 			else
@@ -417,14 +425,14 @@ function on_message(self, message_id, message)
 
 		if self.control then
 			print("car: acquire input focus")
-			msg.post("#", MSG.ACQ_INPUT)
+			msg.post(ID.THIS, MSG.ACQ_INPUT)
 
 			if not self.turned_on and not self.engine_sound then
-				self.engine_sound = sound.play("#engine")
+				self.engine_sound = sound.play(ID.ENGINESOUND)
 			end
 		else
 			print("car: release input focus")
-			msg.post("#", MSG.REL_INPUT)
+			msg.post(ID.THIS, MSG.REL_INPUT)
 		end
 
 		print("car: reset accel")
